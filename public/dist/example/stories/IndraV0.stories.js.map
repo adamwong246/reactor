@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../example/stories/IndraV0.stories.js", "../../../../example/components/IndraV0.js"],
+  "sourcesContent": ["import React from 'react';\nimport { IndraV0 } from '../components/IndraV0.js';\n\nexport default function IndraV0Story() {\n    return (\n        <div>\n            <IndraV0 />\n        </div>\n    );\n}\n", "import React from 'react';\n\nexport function IndraV0() {\n    return (\n        <div style={{\n            padding: '20px',\n            textAlign: 'center',\n            fontFamily: 'Arial, sans-serif'\n        }}>\n            <h1>Hello World from IndraV0!</h1>\n        </div>\n    );\n}\n"],
+  "mappings": ";;;;;;;AAAA,IAAAA,gBAAkB;;;ACAlB,mBAAkB;AASN;AAPL,SAAS,UAAU;AACtB,SACI,4CAAC,SAAI,OAAO;AAAA,IACR,SAAS;AAAA,IACT,WAAW;AAAA,IACX,YAAY;AAAA,EAChB,GACI,sDAAC,QAAG,uCAAyB,GACjC;AAER;;;ADNY,IAAAC,sBAAA;AAHG,SAAR,eAAgC;AACnC,SACI,6CAAC,SACG,uDAAC,WAAQ,GACb;AAER;",
+  "names": ["import_react", "import_jsx_runtime"]
+}

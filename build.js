@@ -1,16 +1,26 @@
 import esbuild from 'esbuild';
 
-const isDev = process.argv.includes('--dev');
+console.log(process.argv);
+const isDev = process.argv[3] === '--dev';
+const configFile = process.argv[2];
+
+const config = await import(`./${configFile}`).then(mod => mod.default);
+
+console.log("stories:", config.stories);
 
 const buildOptions = {
-    entryPoints: ['src/index.js'],
+    format: 'esm',
+    entryPoints: ['index.js', ...config.stories],
     bundle: true,
-    outfile: 'public/dist/bundle.js',
+    outdir: 'public/dist',
     platform: 'browser',
     loader: { '.js': 'jsx' },
     jsx: 'automatic',
-    // Ensure all imports are resolved and bundled
     resolveExtensions: ['.js', '.jsx', '.ts', '.tsx'],
+    splitting: true,
+    external: [],
+    // Use specific chunk names for stories
+    // chunkNames: 'stories/[name]',
 };
 
 if (isDev) {

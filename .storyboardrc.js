@@ -1,6 +1,7 @@
 export default {
     stories: [
-        'src/stories/Button.stories.js',
-        'src/stories/Header.stories.js'
+        'example/stories/Button.stories.js',
+        'example/stories/Header.stories.js',
+        'example/stories/IndraV0.stories.js'
     ]
 };

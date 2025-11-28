@@ -8471,3 +8471,88 @@
 
 # 2025-11-28 13:31:03.301610
 +bundle.js:11 Uncaught Error: Module not found in bundle: ./src/stories/Button.stories.js
+
+# 2025-11-28 14:08:06.235201
++/drop
+
+# 2025-11-28 14:08:11.612236
++/add src/index.js 
+
+# 2025-11-28 14:08:16.863396
++break up this file
+
+# 2025-11-28 14:14:56.268578
++a
+
+# 2025-11-28 14:19:23.064080
++/clear 
+
+# 2025-11-28 14:19:45.587117
++/add .storyboardrc.js build.js src/
+
+# 2025-11-28 14:20:14.669921
++create a new hello world react app called "indraV0" and add it to the config file 
+
+# 2025-11-28 14:20:47.122450
++y
+
+# 2025-11-28 14:20:51.207968
++n
+
+# 2025-11-28 14:21:37.717149
++        const storyComponents = {
++            'src/stories/Button.stories.js': ButtonStory,
++            'src/stories/Header.stories.js': HeaderStory,
++            'src/stories/IndraV0.stories.js': IndraV0Story
++        };   I hate this. find a better soluytion
+
+# 2025-11-28 14:30:06.808909
++/add public/index.html 
+
+# 2025-11-28 14:30:07.430259
++(index):1 Access to script at 'localhost:8000/src/stories/Button.stories.js' from origin 'http://localhost:8000' has been blocked by CORS policy: Cross origin requests are only supported for protocol schemes: chrome, chrome-extension, chrome-untrusted, data, http, https, isolated-app.
+
+# 2025-11-28 14:30:09.266674
++n
+
+# 2025-11-28 14:32:09.040757
++we do not need to bundle these into actual files. esbulds dev server will serve then automatiucally. https://esbuild.github.io/api
+
+# 2025-11-28 14:32:10.677705
++y
+
+# 2025-11-28 14:32:12.078104
++n
+
+# 2025-11-28 14:38:45.583002
++Access to script at 'localhost:8000/public/dist/stories/Button.stories.js)' from origin 'http://localhost:8000' has been blocked by CORS policy: Cross origin requests are only supported for protocol schemes: chrome, chrome-extension, chrome-untrusted, data, http, https, isolated-app.
++
++
+
+# 2025-11-28 14:38:50.004438
++y
+
+# 2025-11-28 14:38:52.865140
++n
+
+# 2025-11-28 14:38:54.504606
++/clear
+
+# 2025-11-28 14:38:57.561580
++Access to script at 'localhost:8000/public/dist/stories/Button.stories.js)' from origin 'http://localhost:8000' has been blocked by CORS policy: Cross origin requests are only supported for protocol schemes: chrome, chrome-extension, chrome-untrusted, data, http, https, isolated-app.
++
++
+
+# 2025-11-28 14:38:58.893761
++y
+
+# 2025-11-28 14:41:20.261720
++/read README.md 
+
+# 2025-11-28 14:41:30.026332
++Access to script at 'localhost:8000/public/dist/stories/Button.stories.js)' from origin 'http://localhost:8000' has been blocked by CORS policy: Cross origin requests are only supported for protocol schemes: chrome, chrome-extension, chrome-untrusted, data, http, https, isolated-app.
++
++
+
+# 2025-11-28 14:41:31.512808
++n
