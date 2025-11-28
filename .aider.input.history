@@ -8373,3 +8373,101 @@
 
 # 2025-11-28 10:35:19.809182
 +create a dead simple esbuild dev server
+
+# 2025-11-28 10:35:48.112567
++y
+
+# 2025-11-28 10:36:31.086886
++d
+
+# 2025-11-28 10:37:34.335614
++use this basis to make a lightweight clone of react-storyboard
+
+# 2025-11-28 10:38:56.955699
++y
+
+# 2025-11-28 10:40:35.937487
++there should not be stories. Instead, a config file should define the react files top show. move the react components to their own files. The left sidebar should reflect the directory stucture , rather than storybooks 
+
+# 2025-11-28 10:42:07.284134
++y
+
+# 2025-11-28 10:42:26.603625
++✘ [ERROR] Could not resolve "node:util"
+
+# 2025-11-28 10:42:57.919343
++make sure everything is module-style, not common-style
+
+# 2025-11-28 10:43:52.194328
++why are you not relying on esbuilds dev server? for fucks sake stop making this so complicated
+
+# 2025-11-28 10:44:36.282782
++/add package.json public src
+
+# 2025-11-28 10:45:27.913809
++simplify this app.  I WANT THIS SIMPLEST FUCKING SOLUTION. STOP DOING STUPID TRICKS. JUST USE ESBUILD'S DEV SERVE to BUILD REACT AND SERVE IT. GOD DMAN THIS SHOULD NT BE HARd
+
+# 2025-11-28 10:46:27.777952
++y
+
+# 2025-11-28 10:47:42.037954
++I want a dev and build script. Don't just call esbuild directly
+
+# 2025-11-28 10:49:05.436278
++HOLY SHIT STOP DYNAMICALL IMPORTING COMPOENTNS
+
+# 2025-11-28 10:49:50.978351
++WHY ARE YOU SDOING THINGS I DID NOT ASK FOR!!! WHYHYYYYYYY
+
+# 2025-11-28 10:50:38.751418
++d
+
+# 2025-11-28 10:50:40.387177
++✘ [ERROR] Could not resolve "tty"
++
++    node_modules/tsx/node_modules/esbuild/lib/main.js:1792:18:
++      1792 │ var tty = require("tty");
++           ╵                   ~~~~~
++
++  The package "tty" wasn't found on the file system but is built into node. Are you trying to bundle
++  for node? You can use "platform: 'node'" to do that, which will remove this error.
++
++/Users/adam/Code/reactor/node_modules/esbuild/lib/main.js:1467
++  let error = new Error(text);
++              ^
++
++Error: Build failed with 346 errors:
++.git/FETCH_HEAD:1:1: ERROR: Syntax error "b"
++.git/config:8:8: ERROR: Expected "]" but found "\"origin\""
++.git/description:1:8: ERROR: Expected ";" but found "repository"
++.git/index:1:4: ERROR: Expected ";" but found "\
+
+# 2025-11-28 13:16:19.277093
++update the layout. There should be a left column whch contains a a list of views. Click upon them will load the component inthe larger right column
+
+# 2025-11-28 13:21:19.921216
++ihave broken out a folder for components and a folder for stories. Each story should export a react component, which should be an instation of the react elements in the component folder 
+
+# 2025-11-28 13:21:40.085633
++/add src/
+
+# 2025-11-28 13:21:47.965480
++ihave broken out a folder for components and a folder for stories. Each story should export a react component, which should be an instation of the react elements in the component folder 
+
+# 2025-11-28 13:23:10.181084
++y
+
+# 2025-11-28 13:24:13.872918
++stories should only export a single default component. there should be 2 files for each variety of header, OR, the 2 headers should be rendered in the same story 
+
+# 2025-11-28 13:26:29.108528
++make the sidebar a tree instead of a list. The tree should match the directory structure, with clickables links for each story. This tree only needs to show storeis, not raw components 
+
+# 2025-11-28 13:28:18.346979
++/ad .storyboardrc.js 
+
+# 2025-11-28 13:29:04.478464
++the stories should be added via the config file. This config file should have a flat list of stories, but the app should expand this list (automatically) into the tree view 
+
+# 2025-11-28 13:31:03.301610
++bundle.js:11 Uncaught Error: Module not found in bundle: ./src/stories/Button.stories.js
