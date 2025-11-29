@@ -7,6 +7,7 @@ export function AboutModal({ show, onHide, user }) {
     const backend = useContext(BackendContext);
     const [isEditing, setIsEditing] = useState(false);
     const [aboutMeText, setAboutMeText] = useState('');
+    const [username, setUsername] = useState('');
     const [currentUser, setCurrentUser] = useState(null);
     const [genderMetrics, setGenderMetrics] = useState({
         genderIdentityMan: 50,
@@ -41,6 +42,7 @@ export function AboutModal({ show, onHide, user }) {
                 // If this is the current user's profile, initialize the about me text and gender metrics
                 if (user && user.uid === userData.uid) {
                     setAboutMeText(user.aboutMe || '');
+                    setUsername(user.username || '');
                     setGenderMetrics({
                         genderIdentityMan: user.genderIdentityMan || 50,
                         genderIdentityWoman: user.genderIdentityWoman || 50,
@@ -94,6 +96,7 @@ export function AboutModal({ show, onHide, user }) {
                 
                 await backend.updateUser(user.uid, { 
                     aboutMe: aboutMeText,
+                    username: username.trim(),
                     ...genderMetrics,
                     sexAssignedAtBirth: sexAssignedAtBirth,
                     birthdate: birthdate,
@@ -103,6 +106,7 @@ export function AboutModal({ show, onHide, user }) {
                 // Update the local user object to reflect the change
                 Object.assign(user, { 
                     aboutMe: aboutMeText, 
+                    username: username.trim(),
                     ...genderMetrics,
                     sexAssignedAtBirth: sexAssignedAtBirth,
                     birthdate: birthdate,
@@ -118,6 +122,7 @@ export function AboutModal({ show, onHide, user }) {
 
     const handleCancel = async () => {
         setAboutMeText(user?.aboutMe || '');
+        setUsername(user?.username || '');
         setGenderMetrics({
             genderIdentityMan: user?.genderIdentityMan || 50,
             genderIdentityWoman: user?.genderIdentityWoman || 50,
@@ -296,6 +301,27 @@ export function AboutModal({ show, onHide, user }) {
                             padding: '15px',
                             borderRadius: '8px'
                         }}>
+                            {/* Username Field */}
+                            <div style={{ marginBottom: '15px' }}>
+                                <strong>Username:</strong>
+                                {isEditing ? (
+                                    <Form.Control
+                                        type="text"
+                                        value={username}
+                                        onChange={(e) => setUsername(e.target.value)}
+                                        placeholder="Enter your username"
+                                        style={{ marginTop: '5px', maxWidth: '300px' }}
+                                    />
+                                ) : (
+                                    ` ${user?.username ? `@${user.username}` : 'Not set'}`
+                                )}
+                                {isEditing && (
+                                    <Form.Text className="text-muted">
+                                        This is how other users will find and mention you.
+                                    </Form.Text>
+                                )}
+                            </div>
+                            
                             {/* User Type Field */}
                             <div style={{ marginBottom: '15px' }}>
                                 <strong>User Type:</strong>

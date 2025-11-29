@@ -9660,3 +9660,68 @@
 
 # 2025-11-29 11:06:34.522230
 +y
+
+# 2025-11-29 11:09:47.496778
++no users shows any posts 
+
+# 2025-11-29 11:11:46.951937
++n
+
+# 2025-11-29 11:11:57.565735
++no users shows any posts , but posts do appear on the feed 
+
+# 2025-11-29 11:13:28.622150
++Posts should not be typed as profile vs feed. All you posts appear on your profile. All your posts and all your friends posts appear on the feed but there is no type difference between them 
+
+# 2025-11-29 11:14:59.195203
++n
+
+# 2025-11-29 11:16:52.574324
++posts are missing from the chats 
+
+# 2025-11-29 11:17:46.435650
++in case of "chat", only find chat type posts 
+
+# 2025-11-29 11:19:10.185381
++n
+
+# 2025-11-29 11:20:00.635931
++/add example/components/IndraV0/Settings.tsx
+
+# 2025-11-29 11:20:32.267231
++The settings page should allow a user to set their name. Remove the default "You" and use real name instead 
+
+# 2025-11-29 11:21:43.943738
++n
+
+# 2025-11-29 11:23:43.059680
++when updating my name via settings: installHook.js:1 Error saving settings: Error: User not found
++    at updateUser (BackendUtils.ts:19:11)
++    at FakeBackend.ts:140:32
+
+# 2025-11-29 11:25:04.372852
++n
+
+# 2025-11-29 11:26:35.980911
++extend the model to support 3 ways of identifying a user 1) Legal Name, set through the settings page 2) email address, also through settings page 3) Username, set through the about-me-modal. 
+
+# 2025-11-29 11:28:47.599372
++n
+
+# 2025-11-29 11:28:57.272466
++3) Username is set through the about-me-modal. 
+
+# 2025-11-29 11:30:49.346321
++/add example/components/IndraV0/AboutModal.js
+
+# 2025-11-29 11:30:51.251950
++proceed 
+
+# 2025-11-29 11:34:01.356579
++n
+
+# 2025-11-29 11:35:43.884177
++between initDB and Posts.ts, there are multiple sources of post data. Consolidate all posts into the 1 file Posts.ts, and import those posts into the InitDb
+
+# 2025-11-29 11:35:47.521219
++y

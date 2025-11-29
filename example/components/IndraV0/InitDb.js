@@ -1,41 +1,4 @@
-// Let's add some sample posts directly for now
-const posts = [
-  {
-    id: "post-1",
-    uid: "0",
-    text: "Welcome to my feed! This is my first post.",
-    timestamp: Date.now() - 3600000,
-    type: "feed"
-  },
-  {
-    id: "post-2",
-    uid: "1",
-    text: "Just finished a great design project! #design #ux",
-    timestamp: Date.now() - 7200000,
-    type: "feed"
-  },
-  {
-    id: "post-3",
-    uid: "2",
-    text: "Exploring new machine learning algorithms today. Fascinating stuff!",
-    timestamp: Date.now() - 10800000,
-    type: "feed"
-  },
-  {
-    id: "post-4",
-    uid: "0",
-    text: "Working on improving the feed functionality. Stay tuned!",
-    timestamp: Date.now() - 14400000,
-    type: "feed"
-  },
-  {
-    id: "post-5",
-    uid: "1",
-    text: "Coffee and code - the perfect combination for a productive day!",
-    timestamp: Date.now() - 18000000,
-    type: "feed"
-  }
-];
+import allPosts from './Posts.ts';
 
 export const InitDb = {
   users: [
@@ -318,50 +281,7 @@ export const InitDb = {
     },
   ],
 
-  posts: [
-    ...posts,
-    // Add notification posts
-    {
-      id: "notification-1",
-      uid: "system",
-      text: "Alice liked your post",
-      timestamp: Date.now() - 1000 * 60 * 5, // 5 minutes ago
-      type: "notification",
-      subtype: "like"
-    },
-    {
-      id: "notification-2",
-      uid: "system",
-      text: "Bob started following you",
-      timestamp: Date.now() - 1000 * 60 * 30, // 30 minutes ago
-      type: "notification",
-      subtype: "follow"
-    },
-    {
-      id: "notification-3",
-      uid: "system",
-      text: "Charlie replied to your comment",
-      timestamp: Date.now() - 1000 * 60 * 60 * 2, // 2 hours ago
-      type: "notification",
-      subtype: "reply"
-    },
-    {
-      id: "notification-4",
-      uid: "system",
-      text: "David mentioned you in a post",
-      timestamp: Date.now() - 1000 * 60 * 60 * 24, // 1 day ago
-      type: "notification",
-      subtype: "mention"
-    },
-    {
-      id: "notification-5",
-      uid: "system",
-      text: "Eva shared your post",
-      timestamp: Date.now() - 1000 * 60 * 60 * 48, // 2 days ago
-      type: "notification",
-      subtype: "share"
-    }
-  ],
+  posts: allPosts,
   
   subjects: [
     {

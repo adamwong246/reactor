@@ -14,13 +14,38 @@ export const addUser = (state, name: string) => {
 };
 
 export const updateUser = (state, uid: string, updates: any) => {
+  // Check if the user exists in the users list
   const userIndex = state.users.findIndex(u => u.uid === uid);
   if (userIndex === -1) {
-    throw new Error("User not found");
+    // If the user is not found in the users list, it might be the current user
+    // Let's add them to the users list
+    const newUser = {
+      uid: uid,
+      name: updates.name || "User",
+      legalName: updates.legalName || "",
+      email: updates.email || "",
+      username: updates.username || "",
+      aboutMe: updates.aboutMe || "This user hasn't written an about me yet.",
+      sexAssignedAtBirth: updates.sexAssignedAtBirth || "Not specified",
+      birthdate: updates.birthdate || "",
+      genderIdentityMan: updates.genderIdentityMan !== undefined ? updates.genderIdentityMan : 50,
+      genderIdentityWoman: updates.genderIdentityWoman !== undefined ? updates.genderIdentityWoman : 50,
+      anatomicalSexMale: updates.anatomicalSexMale !== undefined ? updates.anatomicalSexMale : 50,
+      anatomicalSexFemale: updates.anatomicalSexFemale !== undefined ? updates.anatomicalSexFemale : 50,
+      sexuallyAttractedToMen: updates.sexuallyAttractedToMen !== undefined ? updates.sexuallyAttractedToMen : 50,
+      sexuallyAttractedToWomen: updates.sexuallyAttractedToWomen !== undefined ? updates.sexuallyAttractedToWomen : 50,
+      romanticallyAttractedToMen: updates.romanticallyAttractedToMen !== undefined ? updates.romanticallyAttractedToMen : 50,
+      romanticallyAttractedToWomen: updates.romanticallyAttractedToWomen !== undefined ? updates.romanticallyAttractedToWomen : 50,
+      ...updates
+    };
+    const updatedUsers = [...state.users, newUser];
+    return updatedUsers;
+  } else {
+    // Update existing user
+    const updatedUsers = [...state.users];
+    updatedUsers[userIndex] = { ...updatedUsers[userIndex], ...updates };
+    return updatedUsers;
   }
-  const updatedUsers = [...state.users];
-  updatedUsers[userIndex] = { ...updatedUsers[userIndex], ...updates };
-  return updatedUsers;
 };
 
 // Helper function to check relationship type
@@ -203,7 +228,7 @@ export const searchSubjects = (state, query: string) => {
 };
 
 export const searchUsers = (state, query: string, currentUserUid = null) => {
-  let results = searchItems(state.users, query, ['name']);
+  let results = searchItems(state.users, query, ['name', 'username']);
   
   // Filter out users blocked by or blocking the current user
   if (currentUserUid) {
@@ -228,20 +253,39 @@ const formatTime = (timestamp: number) => {
 
 // Helper function to format a post
 const formatPost = (state, post) => {
-  const user = state.users.find(u => u.uid === post.uid) || { name: "Unknown User" };
+  // Handle cases where user might not be found
+  let userName = "Unknown User";
+  if (post.uid === "system") {
+    userName = "System";
+  } else {
+    const user = state.users.find(u => u.uid === post.uid);
+    if (user) {
+      // Use username if available, otherwise fall back to name
+      userName = user.username || user.name;
+    }
+  }
   
-  return {
+  // Build the base post object
+  const formattedPost = {
     id: post.id,
     uid: post.uid,
-    user: user.name,
+    user: userName,
     content: post.text,
     time: formatTime(post.timestamp),
     type: post.type,
     timestamp: post.timestamp,
-    hasLikability: post.type === 'feed' || post.type === 'profile',
-    likability: Math.floor(Math.random() * 101),
+    // All regular posts have likability, notifications don't
+    hasLikability: post.type !== "notification",
+    likability: post.type !== "notification" ? Math.floor(Math.random() * 101) : 0,
     children: []
   };
+  
+  // Add notification-specific fields
+  if (post.type === "notification" && post.subtype) {
+    formattedPost.subtype = post.subtype;
+  }
+  
+  return formattedPost;
 };
 
 export const getPosts = (state, context: any, room = null, profileUserUid = null) => {
@@ -249,17 +293,17 @@ export const getPosts = (state, context: any, room = null, profileUserUid = null
 
   switch (context) {
     case "profile":
-      // If profileUserUid is provided, show that user's profile posts
-      // Otherwise show current user's profile posts
+      // If profileUserUid is provided, show that user's posts
+      // Otherwise show current user's posts
       const targetUid = profileUserUid || (state.currentUser ? state.currentUser.uid : null);
       if (targetUid) {
         filteredPosts = state.posts.filter(
-          (post) => post.type === "profile" && post.uid === targetUid
+          (post) => post.uid === targetUid
         );
       }
       break;
     case "feed":
-      // Show profile posts and feed posts from followed users
+      // Show posts from followed users and current user
       const currentUserUid = state.currentUser ? state.currentUser.uid : null;
       if (currentUserUid) {
         const followedUids = state.relationships
@@ -267,9 +311,7 @@ export const getPosts = (state, context: any, room = null, profileUserUid = null
           .map((r) => r.toUid);
         followedUids.push(currentUserUid); // Include current user's posts
         filteredPosts = state.posts.filter(
-          (post) =>
-            (post.type === "profile" || post.type === "feed") &&
-            followedUids.includes(post.uid)
+          (post) => followedUids.includes(post.uid)
         );
       }
       break;
@@ -348,14 +390,17 @@ export const getPosts = (state, context: any, room = null, profileUserUid = null
       // We'll format users as posts
       const allUsers = state.users;
       // Convert users to the post format
-      const userPosts = allUsers.map((user) => ({
-        id: `user-${user.uid}`,
-        uid: user.uid,
-        text: `User: ${user.name} - Connect and chat!`,
-        timestamp: Date.now(),
-        type: "user",
-        user: user,
-      }));
+      const userPosts = allUsers.map((user) => {
+        const displayName = user.username ? `@${user.username}` : user.name;
+        return {
+          id: `user-${user.uid}`,
+          uid: user.uid,
+          text: `User: ${displayName} - Connect and chat!`,
+          timestamp: Date.now(),
+          type: "user",
+          user: user,
+        };
+      });
       filteredPosts = userPosts;
       break;
     case "blocked":
@@ -367,14 +412,17 @@ export const getPosts = (state, context: any, room = null, profileUserUid = null
         .map((rel) => state.users.find((u) => u.uid === rel.toUid))
         .filter(Boolean);
 
-      const blockedUserPosts = blockedUsers.map((user) => ({
-        id: `blocked-${user.uid}`,
-        uid: user.uid,
-        text: `You have blocked this user`,
-        timestamp: Date.now(),
-        type: "blocked",
-        user: user,
-      }));
+      const blockedUserPosts = blockedUsers.map((user) => {
+        const displayName = user.username ? `@${user.username}` : user.name;
+        return {
+          id: `blocked-${user.uid}`,
+          uid: user.uid,
+          text: `You have blocked ${displayName}`,
+          timestamp: Date.now(),
+          type: "blocked",
+          user: user,
+        };
+      });
       filteredPosts = blockedUserPosts;
       break;
     case "following":
@@ -386,14 +434,17 @@ export const getPosts = (state, context: any, room = null, profileUserUid = null
         .map((rel) => state.users.find((u) => u.uid === rel.toUid))
         .filter(Boolean);
 
-      const followingUserPosts = followingUsers.map((user) => ({
-        id: `following-${user.uid}`,
-        uid: user.uid,
-        text: `You are following this user`,
-        timestamp: Date.now(),
-        type: "following",
-        user: user,
-      }));
+      const followingUserPosts = followingUsers.map((user) => {
+        const displayName = user.username ? `@${user.username}` : user.name;
+        return {
+          id: `following-${user.uid}`,
+          uid: user.uid,
+          text: `You are following ${displayName}`,
+          timestamp: Date.now(),
+          type: "following",
+          user: user,
+        };
+      });
       filteredPosts = followingUserPosts;
       break;
     case "followers":
@@ -405,14 +456,17 @@ export const getPosts = (state, context: any, room = null, profileUserUid = null
         .map((rel) => state.users.find((u) => u.uid === rel.fromUid))
         .filter(Boolean);
 
-      const followerUserPosts = followers.map((user) => ({
-        id: `follower-${user.uid}`,
-        uid: user.uid,
-        text: `This user follows you`,
-        timestamp: Date.now(),
-        type: "followers",
-        user: user,
-      }));
+      const followerUserPosts = followers.map((user) => {
+        const displayName = user.username ? `@${user.username}` : user.name;
+        return {
+          id: `follower-${user.uid}`,
+          uid: user.uid,
+          text: `${displayName} follows you`,
+          timestamp: Date.now(),
+          type: "followers",
+          user: user,
+        };
+      });
       filteredPosts = followerUserPosts;
       break;
     case "subjects":
@@ -434,16 +488,19 @@ export const getPosts = (state, context: any, room = null, profileUserUid = null
     case "search":
       // For search, include users, posts, and subjects
       // Convert users to posts format
-      const searchUserPosts = state.users.map(user => ({
-        id: `search-user-${user.uid}`,
-        uid: user.uid,
-        text: `User: ${user.name} - ${user.aboutMe || 'No description available'}`,
-        timestamp: Date.now(),
-        type: "search-user",
-        user: user.name,
-        time: 'User',
-        hasLikability: false
-      }));
+      const searchUserPosts = state.users.map(user => {
+        const displayName = user.username ? `@${user.username}` : user.name;
+        return {
+          id: `search-user-${user.uid}`,
+          uid: user.uid,
+          text: `User: ${displayName} - ${user.aboutMe || 'No description available'}`,
+          timestamp: Date.now(),
+          type: "search-user",
+          user: displayName,
+          time: 'User',
+          hasLikability: false
+        };
+      });
       
       // Convert subjects to posts format
       const searchSubjectPosts = state.subjects.map(subject => ({

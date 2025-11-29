@@ -53,6 +53,9 @@ export class FakeBackend {
     const currentUser = { 
       uid: "0", 
       name: "You",
+      legalName: "",
+      email: "",
+      username: "",
       aboutMe: "Welcome to my profile! I'm passionate about technology, design, and building meaningful connections.",
       sexAssignedAtBirth: "Not specified",
       birthdate: "1990-01-01",
@@ -73,8 +76,11 @@ export class FakeBackend {
       ]
     };
 
+    // Add current user to the users list
+    const allUsers = [...users, currentUser];
+    
     // Dispatch initial state to the store
-    store.dispatch(updateUsers(users));
+    store.dispatch(updateUsers(allUsers));
     store.dispatch(updateCurrentUser(currentUser));
     store.dispatch(updateRelationships(InitDb.relationships));
     store.dispatch(updateChatRooms(InitDb.chatRooms));

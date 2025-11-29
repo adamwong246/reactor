@@ -15,7 +15,7 @@ import {
   selectUserRatings,
   selectUsers,
   useSelector
-} from "../../chunk-UPVY4YXW.js";
+} from "../../chunk-MVHHP2JG.js";
 import {
   BackendContext,
   Button_default,
@@ -28,7 +28,7 @@ import {
   Tab_default,
   backend,
   store
-} from "../../chunk-SXSZYXDB.js";
+} from "../../chunk-RLF7CMYA.js";
 import "../../chunk-65LQHSH5.js";
 import {
   __toESM,
@@ -609,17 +609,52 @@ var RightSidebar = ({ activeTab, setActiveTab }) => {
   ] });
 };
 
-// example/components/IndraV0/Settings.js
+// example/components/IndraV0/Settings.tsx
 var import_react4 = __toESM(require_react(), 1);
 var import_jsx_runtime5 = __toESM(require_jsx_runtime(), 1);
 function Settings() {
+  const backend2 = (0, import_react4.useContext)(BackendContext);
   const [notifications, setNotifications] = (0, import_react4.useState)(true);
   const [emailUpdates, setEmailUpdates] = (0, import_react4.useState)(false);
   const [theme, setTheme] = (0, import_react4.useState)("light");
   const [language, setLanguage] = (0, import_react4.useState)("english");
   const [privacy, setPrivacy] = (0, import_react4.useState)("public");
-  const handleSaveSettings = () => {
-    alert("Settings saved successfully!");
+  const [legalName, setLegalName] = (0, import_react4.useState)("");
+  const [email, setEmail] = (0, import_react4.useState)("");
+  const [isLoading, setIsLoading] = (0, import_react4.useState)(false);
+  (0, import_react4.useEffect)(() => {
+    const fetchCurrentUser = async () => {
+      try {
+        const currentUser = await backend2.getCurrentUser();
+        setLegalName(currentUser.legalName || "");
+        setEmail(currentUser.email || "");
+      } catch (error) {
+        console.error("Error fetching current user:", error);
+      }
+    };
+    fetchCurrentUser();
+  }, [backend2]);
+  const handleSaveSettings = async () => {
+    setIsLoading(true);
+    try {
+      const currentUser = await backend2.getCurrentUser();
+      const updates = {};
+      if (legalName.trim()) {
+        updates.legalName = legalName.trim();
+      }
+      if (email.trim()) {
+        updates.email = email.trim();
+      }
+      if (Object.keys(updates).length > 0) {
+        await backend2.updateUser(currentUser.uid, updates);
+      }
+      alert("Settings saved successfully!");
+    } catch (error) {
+      console.error("Error saving settings:", error);
+      alert("Error saving settings. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
   };
   return /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("div", { style: { padding: "20px" }, children: [
     /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("h2", { children: "Settings" }),
@@ -705,6 +740,37 @@ function Settings() {
       ] }) })
     ] }),
     /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)(Card_default, { style: { marginBottom: "20px" }, children: [
+      /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(Card_default.Header, { children: /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("h5", { children: "Profile Information" }) }),
+      /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)(Card_default.Body, { children: [
+        /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)(Form_default.Group, { style: { marginBottom: "15px" }, children: [
+          /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(Form_default.Label, { children: "Legal Name" }),
+          /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(
+            Form_default.Control,
+            {
+              type: "text",
+              value: legalName,
+              onChange: (e) => setLegalName(e.target.value),
+              placeholder: "Enter your legal name"
+            }
+          ),
+          /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(Form_default.Text, { className: "text-muted", children: "Your legal name for verification purposes." })
+        ] }),
+        /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)(Form_default.Group, { style: { marginBottom: "15px" }, children: [
+          /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(Form_default.Label, { children: "Email Address" }),
+          /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(
+            Form_default.Control,
+            {
+              type: "email",
+              value: email,
+              onChange: (e) => setEmail(e.target.value),
+              placeholder: "Enter your email address"
+            }
+          ),
+          /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(Form_default.Text, { className: "text-muted", children: "We'll never share your email with anyone else." })
+        ] })
+      ] })
+    ] }),
+    /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)(Card_default, { style: { marginBottom: "20px" }, children: [
       /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(Card_default.Header, { children: /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("h5", { children: "Account" }) }),
       /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(Card_default.Body, { children: /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(Row_default, { children: /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)(Col_default, { children: [
         /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(Button_default, { variant: "outline-primary", style: { marginRight: "10px" }, children: "Change Password" }),
@@ -712,7 +778,16 @@ function Settings() {
         /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(Button_default, { variant: "outline-danger", children: "Delete Account" })
       ] }) }) })
     ] }),
-    /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("div", { style: { textAlign: "center", marginTop: "30px" }, children: /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(Button_default, { variant: "primary", onClick: handleSaveSettings, size: "lg", children: "Save Settings" }) })
+    /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("div", { style: { textAlign: "center", marginTop: "30px" }, children: /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(
+      Button_default,
+      {
+        variant: "primary",
+        onClick: handleSaveSettings,
+        size: "lg",
+        disabled: isLoading,
+        children: isLoading ? "Saving..." : "Save Settings"
+      }
+    ) })
   ] });
 }
 
