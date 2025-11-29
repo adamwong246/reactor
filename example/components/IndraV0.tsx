@@ -9,6 +9,8 @@ import { MainContent } from "./IndraV0/MainContent.js";
 import { store } from "./IndraV0/store.js";
 import { DBProvider, useDB } from "./IndraV0/DBContext.js";
 
+import { BaseColor } from "./IndraV0/style.js"
+
 // Inner component that uses the DB context
 function IndraV0Content() {
   const [activeTab, setActiveTab] = useState("profile");
@@ -90,7 +92,7 @@ function IndraV0Content() {
         <Col
           xs={2}
           style={{
-            backgroundColor: "#4A154B",
+            backgroundColor: BaseColor,
             padding: 0,
             display: "flex",
             flexDirection: "column",

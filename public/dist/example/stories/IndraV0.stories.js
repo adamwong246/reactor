@@ -841,6 +841,9 @@ var MainContent = ({
   ] }) });
 };
 
+// example/components/IndraV0/style.ts
+var BaseColor = "#4A154B";
+
 // example/components/IndraV0.tsx
 var import_jsx_runtime7 = __toESM(require_jsx_runtime(), 1);
 function IndraV0Content() {
@@ -913,7 +916,7 @@ function IndraV0Content() {
           {
             xs: 2,
             style: {
-              backgroundColor: "#4A154B",
+              backgroundColor: BaseColor,
               padding: 0,
               display: "flex",
               flexDirection: "column"
