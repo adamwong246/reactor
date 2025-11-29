@@ -1,18 +1,20 @@
 import React, { useState, useContext, useEffect, useRef } from "react";
 import { Container, Row, Col } from "react-bootstrap";
+import { Provider } from 'react-redux';
 import { Sidebar } from "./IndraV0/Sidebar.js";
 import { BackendContext } from "./IndraV0/Backend.js";
 import { HorizontalNav } from "./IndraV0/HorizontalNav.js";
 import { RightSidebar } from "./IndraV0/RightSidebar.js";
 import { MainContent } from "./IndraV0/MainContent.js";
+import { store } from "./IndraV0/store.js";
+import { DBProvider, useDB } from "./IndraV0/DBContext.js";
 
-export function IndraV0() {
+// Inner component that uses the DB context
+function IndraV0Content() {
   const [activeTab, setActiveTab] = useState("profile");
   const [profileUser, setProfileUser] = useState(null); // Track which user's profile to show
   const backend = useContext(BackendContext);
-  const [currentUser, setCurrentUser] = useState(null);
-  const [users, setUsers] = useState([]);
-  const [chatRooms, setChatRooms] = useState([]);
+  const { currentUser, chatRooms } = useDB();
   const scrollTimeoutRef = useRef(null);
 
   const [focusedSubject, setFocusedSubject] = useState(null);
@@ -60,26 +62,6 @@ export function IndraV0() {
     setProfileUser(null); // Reset to show current user's profile
     setActiveTab("profile");
   };
-
-  useEffect(() => {
-    // Fetch current user, users, and chat rooms when component mounts
-    const fetchData = async () => {
-      try {
-        const [user, userList, roomList] = await Promise.all([
-          backend.getCurrentUser(),
-          backend.getUsers(),
-          backend.getChatRooms(),
-        ]);
-        setCurrentUser(user);
-        setUsers(userList);
-        setChatRooms(roomList);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    };
-
-    fetchData();
-  }, [backend]);
 
   // Scroll to bottom when activeTab changes
   useEffect(() => {
@@ -136,8 +118,6 @@ export function IndraV0() {
           <div id="scrolling-main-content-container" style={{ flex: 1, overflow: "auto" }}>
             <MainContent
               activeTab={activeTab}
-              chatRooms={chatRooms}
-              currentUser={currentUser}
               profileUser={profileUser}
               focusedSubject={focusedSubject}
               handleUserClick={handleUserClick}
@@ -153,11 +133,20 @@ export function IndraV0() {
           <RightSidebar
             activeTab={activeTab}
             setActiveTab={setActiveTab}
-            chatRooms={chatRooms}
-            users={users}
           />
         </Col>
       </Row>
     </Container>
+  );
+}
+
+// Main export that wraps with providers
+export function IndraV0() {
+  return (
+    <Provider store={store}>
+      <DBProvider>
+        <IndraV0Content />
+      </DBProvider>
+    </Provider>
   );
 }

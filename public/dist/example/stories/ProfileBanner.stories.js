@@ -1,6 +1,6 @@
 import {
   ProfileBanner
-} from "../../chunk-5ZPPOQ6L.js";
+} from "../../chunk-SXSZYXDB.js";
 import "../../chunk-65LQHSH5.js";
 import {
   __toESM,

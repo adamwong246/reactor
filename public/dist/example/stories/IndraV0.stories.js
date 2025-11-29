@@ -2,8 +2,20 @@ import {
   LandingPage
 } from "../../chunk-AUTHH52U.js";
 import {
-  ChatWall
-} from "../../chunk-6S3AY6AP.js";
+  ChatWall,
+  Provider_default,
+  selectBlockedUsers,
+  selectChatRooms,
+  selectCurrentUser,
+  selectFriends,
+  selectLikabilityScores,
+  selectPosts,
+  selectRelationships,
+  selectSubjects,
+  selectUserRatings,
+  selectUsers,
+  useSelector
+} from "../../chunk-UPVY4YXW.js";
 import {
   BackendContext,
   Button_default,
@@ -14,8 +26,9 @@ import {
   Nav_default,
   Row_default,
   Tab_default,
-  backend
-} from "../../chunk-5ZPPOQ6L.js";
+  backend,
+  store
+} from "../../chunk-SXSZYXDB.js";
 import "../../chunk-65LQHSH5.js";
 import {
   __toESM,
@@ -24,10 +37,10 @@ import {
 } from "../../chunk-2GIMI7UT.js";
 
 // example/stories/IndraV0.stories.js
-var import_react7 = __toESM(require_react(), 1);
+var import_react6 = __toESM(require_react(), 1);
 
 // example/components/IndraV0.tsx
-var import_react6 = __toESM(require_react(), 1);
+var import_react5 = __toESM(require_react(), 1);
 
 // example/components/IndraV0/Sidebar.js
 var import_react = __toESM(require_react(), 1);
@@ -197,8 +210,7 @@ function Sidebar({ activeTab, setActiveTab }) {
   ] });
 }
 
-// example/components/IndraV0/HorizontalNav.js
-var import_react2 = __toESM(require_react(), 1);
+// example/components/IndraV0/HorizontalNav.tsx
 var import_jsx_runtime2 = __toESM(require_jsx_runtime(), 1);
 function HorizontalNav({ activeTab, setActiveTab, onMyProfileClick }) {
   return /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("div", { style: {
@@ -333,24 +345,73 @@ function HorizontalNav({ activeTab, setActiveTab, onMyProfileClick }) {
   ] }) });
 }
 
-// example/components/IndraV0/RightSidebar.js
+// example/components/IndraV0/RightSidebar.tsx
 var import_react3 = __toESM(require_react(), 1);
+
+// example/components/IndraV0/DBContext.tsx
+var import_react2 = __toESM(require_react(), 1);
 var import_jsx_runtime3 = __toESM(require_jsx_runtime(), 1);
-function RightSidebar({ activeTab, setActiveTab, chatRooms, users }) {
+var DBContext = (0, import_react2.createContext)(void 0);
+var useDB = () => {
+  const context = (0, import_react2.useContext)(DBContext);
+  if (!context) {
+    throw new Error("useDB must be used within a DBProvider");
+  }
+  return context;
+};
+var DBProvider = ({ children }) => {
+  const users = useSelector(selectUsers);
+  const currentUser = useSelector(selectCurrentUser);
+  const relationships = useSelector(selectRelationships);
+  const chatRooms = useSelector(selectChatRooms);
+  const posts = useSelector(selectPosts);
+  const likabilityScores = useSelector(selectLikabilityScores);
+  const userRatings = useSelector(selectUserRatings);
+  const subjects = useSelector(selectSubjects);
+  const friends = useSelector(selectFriends);
+  const blockedUsers = useSelector(selectBlockedUsers);
+  const contextValue = (0, import_react2.useMemo)(() => ({
+    users,
+    currentUser,
+    relationships,
+    chatRooms,
+    posts,
+    likabilityScores,
+    userRatings,
+    subjects,
+    friends,
+    blockedUsers
+  }), [
+    users,
+    currentUser,
+    relationships,
+    chatRooms,
+    posts,
+    likabilityScores,
+    userRatings,
+    subjects,
+    friends,
+    blockedUsers
+  ]);
+  return /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(DBContext.Provider, { value: contextValue, children });
+};
+
+// example/components/IndraV0/RightSidebar.tsx
+var import_jsx_runtime4 = __toESM(require_jsx_runtime(), 1);
+var RightSidebar = ({ activeTab, setActiveTab }) => {
   const [isActiveChatsOpen, setIsActiveChatsOpen] = (0, import_react3.useState)(true);
   const [isOnlineFriendsOpen, setIsOnlineFriendsOpen] = (0, import_react3.useState)(true);
   const [isOfflineFriendsOpen, setIsOfflineFriendsOpen] = (0, import_react3.useState)(true);
-  const [currentUser, setCurrentUser] = (0, import_react3.useState)(null);
   const [filteredUsers, setFilteredUsers] = (0, import_react3.useState)([]);
   const backend2 = (0, import_react3.useContext)(BackendContext);
+  const { currentUser, chatRooms, users } = useDB();
   (0, import_react3.useEffect)(() => {
-    const fetchCurrentUserAndFilterUsers = async () => {
+    const filterUsers = async () => {
+      if (!currentUser) return;
       try {
-        const user = await backend2.getCurrentUser();
-        setCurrentUser(user);
         const filtered = await Promise.all(
           users.map(async (userItem) => {
-            const relationship = await backend2.getRelationship(user.uid, userItem.uid);
+            const relationship = await backend2.getRelationship(currentUser.uid, userItem.uid);
             if (relationship === "blocked" || relationship === "blocked-by") {
               return null;
             }
@@ -359,13 +420,35 @@ function RightSidebar({ activeTab, setActiveTab, chatRooms, users }) {
         );
         setFilteredUsers(filtered.filter(Boolean));
       } catch (error) {
-        console.error("Error fetching current user or filtering users:", error);
+        console.error("Error filtering users:", error);
         setFilteredUsers(users);
       }
     };
-    fetchCurrentUserAndFilterUsers();
-  }, [backend2, users]);
-  return /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { style: {
+    filterUsers();
+  }, [backend2, users, currentUser]);
+  const filteredChatRooms = chatRooms.filter((room) => {
+    if (room.type === "private-1-1") {
+      const otherParticipant = room.participants.find((uid) => uid !== (currentUser?.uid || "0"));
+      const isBlocked = !filteredUsers.some((user) => user.uid === otherParticipant);
+      return !isBlocked;
+    }
+    return true;
+  });
+  const handleMouseEnter = (e, roomId) => {
+    if (activeTab !== roomId) {
+      const target = e.currentTarget;
+      target.style.backgroundColor = "#611f69";
+      target.style.borderLeftColor = "#ffffff";
+    }
+  };
+  const handleMouseLeave = (e, roomId) => {
+    if (activeTab !== roomId) {
+      const target = e.currentTarget;
+      target.style.backgroundColor = "transparent";
+      target.style.borderLeftColor = "transparent";
+    }
+  };
+  return /* @__PURE__ */ (0, import_jsx_runtime4.jsxs)("div", { style: {
     backgroundColor: "#4A154B",
     padding: "20px 0",
     borderLeft: "1px solid #611f69",
@@ -374,8 +457,8 @@ function RightSidebar({ activeTab, setActiveTab, chatRooms, users }) {
     display: "flex",
     flexDirection: "column"
   }, children: [
-    /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { style: { marginBottom: "30px" }, children: [
-      /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)(
+    /* @__PURE__ */ (0, import_jsx_runtime4.jsxs)("div", { style: { marginBottom: "30px" }, children: [
+      /* @__PURE__ */ (0, import_jsx_runtime4.jsxs)(
         "div",
         {
           style: {
@@ -387,19 +470,12 @@ function RightSidebar({ activeTab, setActiveTab, chatRooms, users }) {
           },
           onClick: () => setIsActiveChatsOpen(!isActiveChatsOpen),
           children: [
-            /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("h6", { style: { color: "rgba(255, 255, 255, 0.7)", marginBottom: "15px" }, children: "Active Chats" }),
-            /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("span", { style: { color: "rgba(255, 255, 255, 0.7)" }, children: isActiveChatsOpen ? "\u25BC" : "\u25B6" })
+            /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("h6", { style: { color: "rgba(255, 255, 255, 0.7)", marginBottom: "15px" }, children: "Active Chats" }),
+            /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("span", { style: { color: "rgba(255, 255, 255, 0.7)" }, children: isActiveChatsOpen ? "\u25BC" : "\u25B6" })
           ]
         }
       ),
-      isActiveChatsOpen && chatRooms.filter((room) => {
-        if (room.type === "private-1-1") {
-          const otherParticipant = room.participants.find((uid) => uid !== (currentUser?.uid || "0"));
-          const isBlocked = !filteredUsers.some((user) => user.uid === otherParticipant);
-          return !isBlocked;
-        }
-        return true;
-      }).slice(0, 3).map((room) => /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)(
+      isActiveChatsOpen && filteredChatRooms.slice(0, 3).map((room) => /* @__PURE__ */ (0, import_jsx_runtime4.jsxs)(
         "div",
         {
           style: {
@@ -410,32 +486,22 @@ function RightSidebar({ activeTab, setActiveTab, chatRooms, users }) {
             borderLeft: activeTab === room.id ? "3px solid #ffffff" : "3px solid transparent"
           },
           onClick: () => setActiveTab(room.id),
-          onMouseEnter: (e) => {
-            if (activeTab !== room.id) {
-              e.target.style.backgroundColor = "#611f69";
-              e.target.style.borderLeftColor = "#ffffff";
-            }
-          },
-          onMouseLeave: (e) => {
-            if (activeTab !== room.id) {
-              e.target.style.backgroundColor = "transparent";
-              e.target.style.borderLeftColor = "transparent";
-            }
-          },
+          onMouseEnter: (e) => handleMouseEnter(e, room.id),
+          onMouseLeave: (e) => handleMouseLeave(e, room.id),
           children: [
-            /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { style: { fontWeight: "bold", fontSize: "14px", color: "white" }, children: [
+            /* @__PURE__ */ (0, import_jsx_runtime4.jsxs)("div", { style: { fontWeight: "bold", fontSize: "14px", color: "white" }, children: [
               room.type === "private-1-1" ? "\u{1F4AC}" : room.type === "private-group" ? "\u{1F465}" : "\u{1F310}",
               " ",
               room.name
             ] }),
-            /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { style: { fontSize: "12px", color: "rgba(255, 255, 255, 0.6)" }, children: "Last message: Just now" })
+            /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("div", { style: { fontSize: "12px", color: "rgba(255, 255, 255, 0.6)" }, children: "Last message: Just now" })
           ]
         },
         room.id
       ))
     ] }),
-    /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { style: { marginBottom: "30px" }, children: [
-      /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)(
+    /* @__PURE__ */ (0, import_jsx_runtime4.jsxs)("div", { style: { marginBottom: "30px" }, children: [
+      /* @__PURE__ */ (0, import_jsx_runtime4.jsxs)(
         "div",
         {
           style: {
@@ -447,8 +513,8 @@ function RightSidebar({ activeTab, setActiveTab, chatRooms, users }) {
           },
           onClick: () => setIsOnlineFriendsOpen(!isOnlineFriendsOpen),
           children: [
-            /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("h6", { style: { color: "rgba(255, 255, 255, 0.7)", marginBottom: "15px" }, children: "Online Friends" }),
-            /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("span", { style: { color: "rgba(255, 255, 255, 0.7)" }, children: isOnlineFriendsOpen ? "\u25BC" : "\u25B6" })
+            /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("h6", { style: { color: "rgba(255, 255, 255, 0.7)", marginBottom: "15px" }, children: "Online Friends" }),
+            /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("span", { style: { color: "rgba(255, 255, 255, 0.7)" }, children: isOnlineFriendsOpen ? "\u25BC" : "\u25B6" })
           ]
         }
       ),
@@ -457,7 +523,7 @@ function RightSidebar({ activeTab, setActiveTab, chatRooms, users }) {
           (room) => room.type === "private-1-1" && room.participants.includes(user.uid)
         );
         const roomId = privateChatRoom ? privateChatRoom.id : `private-1-${user.uid}`;
-        return /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)(
+        return /* @__PURE__ */ (0, import_jsx_runtime4.jsxs)(
           "div",
           {
             style: {
@@ -470,35 +536,25 @@ function RightSidebar({ activeTab, setActiveTab, chatRooms, users }) {
               borderLeft: activeTab === roomId ? "3px solid #ffffff" : "3px solid transparent"
             },
             onClick: () => setActiveTab(roomId),
-            onMouseEnter: (e) => {
-              if (activeTab !== roomId) {
-                e.target.style.backgroundColor = "#611f69";
-                e.target.style.borderLeftColor = "#ffffff";
-              }
-            },
-            onMouseLeave: (e) => {
-              if (activeTab !== roomId) {
-                e.target.style.backgroundColor = "transparent";
-                e.target.style.borderLeftColor = "transparent";
-              }
-            },
+            onMouseEnter: (e) => handleMouseEnter(e, roomId),
+            onMouseLeave: (e) => handleMouseLeave(e, roomId),
             children: [
-              /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { style: {
+              /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("div", { style: {
                 width: "12px",
                 height: "12px",
                 borderRadius: "50%",
                 backgroundColor: "#28a745",
                 marginRight: "10px"
               } }),
-              /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { style: { fontSize: "14px", color: "white" }, children: user.name })
+              /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("div", { style: { fontSize: "14px", color: "white" }, children: user.name })
             ]
           },
           user.uid
         );
       })
     ] }),
-    /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { children: [
-      /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)(
+    /* @__PURE__ */ (0, import_jsx_runtime4.jsxs)("div", { children: [
+      /* @__PURE__ */ (0, import_jsx_runtime4.jsxs)(
         "div",
         {
           style: {
@@ -510,8 +566,8 @@ function RightSidebar({ activeTab, setActiveTab, chatRooms, users }) {
           },
           onClick: () => setIsOfflineFriendsOpen(!isOfflineFriendsOpen),
           children: [
-            /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("h6", { style: { color: "rgba(255, 255, 255, 0.7)", marginBottom: "15px" }, children: "Offline Friends" }),
-            /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("span", { style: { color: "rgba(255, 255, 255, 0.7)" }, children: isOfflineFriendsOpen ? "\u25BC" : "\u25B6" })
+            /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("h6", { style: { color: "rgba(255, 255, 255, 0.7)", marginBottom: "15px" }, children: "Offline Friends" }),
+            /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("span", { style: { color: "rgba(255, 255, 255, 0.7)" }, children: isOfflineFriendsOpen ? "\u25BC" : "\u25B6" })
           ]
         }
       ),
@@ -520,7 +576,7 @@ function RightSidebar({ activeTab, setActiveTab, chatRooms, users }) {
           (room) => room.type === "private-1-1" && room.participants.includes(user.uid)
         );
         const roomId = privateChatRoom ? privateChatRoom.id : `private-1-${user.uid}`;
-        return /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)(
+        return /* @__PURE__ */ (0, import_jsx_runtime4.jsxs)(
           "div",
           {
             style: {
@@ -533,27 +589,17 @@ function RightSidebar({ activeTab, setActiveTab, chatRooms, users }) {
               borderLeft: activeTab === roomId ? "3px solid #ffffff" : "3px solid transparent"
             },
             onClick: () => setActiveTab(roomId),
-            onMouseEnter: (e) => {
-              if (activeTab !== roomId) {
-                e.target.style.backgroundColor = "#611f69";
-                e.target.style.borderLeftColor = "#ffffff";
-              }
-            },
-            onMouseLeave: (e) => {
-              if (activeTab !== roomId) {
-                e.target.style.backgroundColor = "transparent";
-                e.target.style.borderLeftColor = "transparent";
-              }
-            },
+            onMouseEnter: (e) => handleMouseEnter(e, roomId),
+            onMouseLeave: (e) => handleMouseLeave(e, roomId),
             children: [
-              /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { style: {
+              /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("div", { style: {
                 width: "12px",
                 height: "12px",
                 borderRadius: "50%",
                 backgroundColor: "#6c757d",
                 marginRight: "10px"
               } }),
-              /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { style: { fontSize: "14px", color: "rgba(255, 255, 255, 0.6)" }, children: user.name })
+              /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("div", { style: { fontSize: "14px", color: "rgba(255, 255, 255, 0.6)" }, children: user.name })
             ]
           },
           user.uid
@@ -561,14 +607,11 @@ function RightSidebar({ activeTab, setActiveTab, chatRooms, users }) {
       })
     ] })
   ] });
-}
-
-// example/components/IndraV0/MainContent.js
-var import_react5 = __toESM(require_react(), 1);
+};
 
 // example/components/IndraV0/Settings.js
 var import_react4 = __toESM(require_react(), 1);
-var import_jsx_runtime4 = __toESM(require_jsx_runtime(), 1);
+var import_jsx_runtime5 = __toESM(require_jsx_runtime(), 1);
 function Settings() {
   const [notifications, setNotifications] = (0, import_react4.useState)(true);
   const [emailUpdates, setEmailUpdates] = (0, import_react4.useState)(false);
@@ -578,12 +621,12 @@ function Settings() {
   const handleSaveSettings = () => {
     alert("Settings saved successfully!");
   };
-  return /* @__PURE__ */ (0, import_jsx_runtime4.jsxs)("div", { style: { padding: "20px" }, children: [
-    /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("h2", { children: "Settings" }),
-    /* @__PURE__ */ (0, import_jsx_runtime4.jsxs)(Card_default, { style: { marginBottom: "20px" }, children: [
-      /* @__PURE__ */ (0, import_jsx_runtime4.jsx)(Card_default.Header, { children: /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("h5", { children: "Notification Preferences" }) }),
-      /* @__PURE__ */ (0, import_jsx_runtime4.jsx)(Card_default.Body, { children: /* @__PURE__ */ (0, import_jsx_runtime4.jsxs)(Form_default, { children: [
-        /* @__PURE__ */ (0, import_jsx_runtime4.jsx)(
+  return /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("div", { style: { padding: "20px" }, children: [
+    /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("h2", { children: "Settings" }),
+    /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)(Card_default, { style: { marginBottom: "20px" }, children: [
+      /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(Card_default.Header, { children: /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("h5", { children: "Notification Preferences" }) }),
+      /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(Card_default.Body, { children: /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)(Form_default, { children: [
+        /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(
           Form_default.Check,
           {
             type: "switch",
@@ -593,7 +636,7 @@ function Settings() {
             onChange: (e) => setNotifications(e.target.checked)
           }
         ),
-        /* @__PURE__ */ (0, import_jsx_runtime4.jsx)(
+        /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(
           Form_default.Check,
           {
             type: "switch",
@@ -605,80 +648,86 @@ function Settings() {
         )
       ] }) })
     ] }),
-    /* @__PURE__ */ (0, import_jsx_runtime4.jsxs)(Card_default, { style: { marginBottom: "20px" }, children: [
-      /* @__PURE__ */ (0, import_jsx_runtime4.jsx)(Card_default.Header, { children: /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("h5", { children: "Appearance" }) }),
-      /* @__PURE__ */ (0, import_jsx_runtime4.jsx)(Card_default.Body, { children: /* @__PURE__ */ (0, import_jsx_runtime4.jsxs)(Form_default.Group, { children: [
-        /* @__PURE__ */ (0, import_jsx_runtime4.jsx)(Form_default.Label, { children: "Theme" }),
-        /* @__PURE__ */ (0, import_jsx_runtime4.jsxs)(
+    /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)(Card_default, { style: { marginBottom: "20px" }, children: [
+      /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(Card_default.Header, { children: /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("h5", { children: "Appearance" }) }),
+      /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(Card_default.Body, { children: /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)(Form_default.Group, { children: [
+        /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(Form_default.Label, { children: "Theme" }),
+        /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)(
           Form_default.Select,
           {
             value: theme,
             onChange: (e) => setTheme(e.target.value),
             children: [
-              /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("option", { value: "light", children: "Light" }),
-              /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("option", { value: "dark", children: "Dark" }),
-              /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("option", { value: "auto", children: "Auto" })
+              /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("option", { value: "light", children: "Light" }),
+              /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("option", { value: "dark", children: "Dark" }),
+              /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("option", { value: "auto", children: "Auto" })
             ]
           }
         )
       ] }) })
     ] }),
-    /* @__PURE__ */ (0, import_jsx_runtime4.jsxs)(Card_default, { style: { marginBottom: "20px" }, children: [
-      /* @__PURE__ */ (0, import_jsx_runtime4.jsx)(Card_default.Header, { children: /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("h5", { children: "Language & Region" }) }),
-      /* @__PURE__ */ (0, import_jsx_runtime4.jsx)(Card_default.Body, { children: /* @__PURE__ */ (0, import_jsx_runtime4.jsxs)(Form_default.Group, { children: [
-        /* @__PURE__ */ (0, import_jsx_runtime4.jsx)(Form_default.Label, { children: "Language" }),
-        /* @__PURE__ */ (0, import_jsx_runtime4.jsxs)(
+    /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)(Card_default, { style: { marginBottom: "20px" }, children: [
+      /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(Card_default.Header, { children: /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("h5", { children: "Language & Region" }) }),
+      /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(Card_default.Body, { children: /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)(Form_default.Group, { children: [
+        /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(Form_default.Label, { children: "Language" }),
+        /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)(
           Form_default.Select,
           {
             value: language,
             onChange: (e) => setLanguage(e.target.value),
             children: [
-              /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("option", { value: "english", children: "English" }),
-              /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("option", { value: "spanish", children: "Spanish" }),
-              /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("option", { value: "french", children: "French" }),
-              /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("option", { value: "german", children: "German" }),
-              /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("option", { value: "chinese", children: "Chinese" })
+              /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("option", { value: "english", children: "English" }),
+              /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("option", { value: "spanish", children: "Spanish" }),
+              /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("option", { value: "french", children: "French" }),
+              /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("option", { value: "german", children: "German" }),
+              /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("option", { value: "chinese", children: "Chinese" })
             ]
           }
         )
       ] }) })
     ] }),
-    /* @__PURE__ */ (0, import_jsx_runtime4.jsxs)(Card_default, { style: { marginBottom: "20px" }, children: [
-      /* @__PURE__ */ (0, import_jsx_runtime4.jsx)(Card_default.Header, { children: /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("h5", { children: "Privacy" }) }),
-      /* @__PURE__ */ (0, import_jsx_runtime4.jsx)(Card_default.Body, { children: /* @__PURE__ */ (0, import_jsx_runtime4.jsxs)(Form_default.Group, { children: [
-        /* @__PURE__ */ (0, import_jsx_runtime4.jsx)(Form_default.Label, { children: "Default Post Privacy" }),
-        /* @__PURE__ */ (0, import_jsx_runtime4.jsxs)(
+    /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)(Card_default, { style: { marginBottom: "20px" }, children: [
+      /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(Card_default.Header, { children: /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("h5", { children: "Privacy" }) }),
+      /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(Card_default.Body, { children: /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)(Form_default.Group, { children: [
+        /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(Form_default.Label, { children: "Default Post Privacy" }),
+        /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)(
           Form_default.Select,
           {
             value: privacy,
             onChange: (e) => setPrivacy(e.target.value),
             children: [
-              /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("option", { value: "public", children: "Public" }),
-              /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("option", { value: "friends", children: "Friends Only" }),
-              /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("option", { value: "private", children: "Private" })
+              /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("option", { value: "public", children: "Public" }),
+              /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("option", { value: "friends", children: "Friends Only" }),
+              /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("option", { value: "private", children: "Private" })
             ]
           }
         )
       ] }) })
     ] }),
-    /* @__PURE__ */ (0, import_jsx_runtime4.jsxs)(Card_default, { style: { marginBottom: "20px" }, children: [
-      /* @__PURE__ */ (0, import_jsx_runtime4.jsx)(Card_default.Header, { children: /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("h5", { children: "Account" }) }),
-      /* @__PURE__ */ (0, import_jsx_runtime4.jsx)(Card_default.Body, { children: /* @__PURE__ */ (0, import_jsx_runtime4.jsx)(Row_default, { children: /* @__PURE__ */ (0, import_jsx_runtime4.jsxs)(Col_default, { children: [
-        /* @__PURE__ */ (0, import_jsx_runtime4.jsx)(Button_default, { variant: "outline-primary", style: { marginRight: "10px" }, children: "Change Password" }),
-        /* @__PURE__ */ (0, import_jsx_runtime4.jsx)(Button_default, { variant: "outline-secondary", style: { marginRight: "10px" }, children: "Export Data" }),
-        /* @__PURE__ */ (0, import_jsx_runtime4.jsx)(Button_default, { variant: "outline-danger", children: "Delete Account" })
+    /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)(Card_default, { style: { marginBottom: "20px" }, children: [
+      /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(Card_default.Header, { children: /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("h5", { children: "Account" }) }),
+      /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(Card_default.Body, { children: /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(Row_default, { children: /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)(Col_default, { children: [
+        /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(Button_default, { variant: "outline-primary", style: { marginRight: "10px" }, children: "Change Password" }),
+        /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(Button_default, { variant: "outline-secondary", style: { marginRight: "10px" }, children: "Export Data" }),
+        /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(Button_default, { variant: "outline-danger", children: "Delete Account" })
       ] }) }) })
     ] }),
-    /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("div", { style: { textAlign: "center", marginTop: "30px" }, children: /* @__PURE__ */ (0, import_jsx_runtime4.jsx)(Button_default, { variant: "primary", onClick: handleSaveSettings, size: "lg", children: "Save Settings" }) })
+    /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("div", { style: { textAlign: "center", marginTop: "30px" }, children: /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(Button_default, { variant: "primary", onClick: handleSaveSettings, size: "lg", children: "Save Settings" }) })
   ] });
 }
 
-// example/components/IndraV0/MainContent.js
-var import_jsx_runtime5 = __toESM(require_jsx_runtime(), 1);
-function MainContent({ activeTab, chatRooms, currentUser, profileUser, focusedSubject, handleUserClick }) {
-  return /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("div", { style: { padding: "20px", minHeight: "100%" }, children: /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)(Tab_default.Content, { children: [
-    /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(Tab_default.Pane, { active: activeTab === "about", children: /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(LandingPage, {}) }),
-    /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(Tab_default.Pane, { active: activeTab === "profile", children: /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(
+// example/components/IndraV0/MainContent.tsx
+var import_jsx_runtime6 = __toESM(require_jsx_runtime(), 1);
+var MainContent = ({
+  activeTab,
+  profileUser,
+  focusedSubject,
+  handleUserClick
+}) => {
+  const { currentUser, chatRooms } = useDB();
+  return /* @__PURE__ */ (0, import_jsx_runtime6.jsx)("div", { style: { padding: "20px", minHeight: "100%" }, children: /* @__PURE__ */ (0, import_jsx_runtime6.jsxs)(Tab_default.Content, { children: [
+    /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(Tab_default.Pane, { active: activeTab === "about", children: /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(LandingPage, {}) }),
+    /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(Tab_default.Pane, { active: activeTab === "profile", children: /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(
       ChatWall,
       {
         showInputForm: true,
@@ -688,49 +737,44 @@ function MainContent({ activeTab, chatRooms, currentUser, profileUser, focusedSu
         onUserClick: handleUserClick
       }
     ) }),
-    /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)(Tab_default.Pane, { active: activeTab === "subject", children: [
-      console.log("MainContent rendering subject tab with focusedSubject:", focusedSubject),
-      /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(
-        ChatWall,
-        {
-          showInputForm: true,
-          context: "subject",
-          scrollDirection: "down",
-          onUserClick: handleUserClick,
-          focusedSubject
-        }
-      )
-    ] }),
-    /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(Tab_default.Pane, { active: activeTab === "feed", children: /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(ChatWall, { showInputForm: true, context: "feed", scrollDirection: "down", onUserClick: handleUserClick }) }),
-    /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(Tab_default.Pane, { active: activeTab === "recommendations", children: /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(ChatWall, { showInputForm: false, context: "recommendations", scrollDirection: "down", onUserClick: handleUserClick }) }),
-    chatRooms.map((room) => /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(Tab_default.Pane, { active: activeTab === room.id, children: /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(ChatWall, { showInputForm: true, context: "chat", scrollDirection: "down", room: room.id, onUserClick: handleUserClick }) }, room.id)),
-    /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(Tab_default.Pane, { active: activeTab === "popular", children: /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(ChatWall, { showInputForm: false, context: "popular", scrollDirection: "down", onUserClick: handleUserClick }) }),
-    /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(Tab_default.Pane, { active: activeTab === "search", children: /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(ChatWall, { showInputForm: false, context: "search", scrollDirection: "down", onUserClick: handleUserClick }) }),
-    /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(Tab_default.Pane, { active: activeTab === "friends", children: /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(ChatWall, { showInputForm: false, context: "friends", scrollDirection: "down", onUserClick: handleUserClick }) }),
-    /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(Tab_default.Pane, { active: activeTab === "notifications", children: /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(ChatWall, { showInputForm: false, context: "notifications", scrollDirection: "down", onUserClick: handleUserClick }) }),
-    /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(Tab_default.Pane, { active: activeTab === "blocked", children: /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(ChatWall, { showInputForm: false, context: "blocked", scrollDirection: "down", onUserClick: handleUserClick }) }),
-    /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(Tab_default.Pane, { active: activeTab === "following", children: /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(ChatWall, { showInputForm: false, context: "following", scrollDirection: "down", onUserClick: handleUserClick }) }),
-    /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(Tab_default.Pane, { active: activeTab === "followers", children: /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(ChatWall, { showInputForm: false, context: "followers", scrollDirection: "down", onUserClick: handleUserClick }) }),
-    /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(Tab_default.Pane, { active: activeTab === "neighbors", children: /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("div", { style: { textAlign: "center", padding: "50px 20px", color: "#666" }, children: [
-      /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("h3", { children: "Neighbors" }),
-      /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("p", { children: "This feature is coming soon!" }),
-      /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("p", { children: "Find users near your location" })
+    /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(Tab_default.Pane, { active: activeTab === "subject", children: /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(
+      ChatWall,
+      {
+        showInputForm: true,
+        context: "subject",
+        scrollDirection: "down",
+        onUserClick: handleUserClick,
+        focusedSubject
+      }
+    ) }),
+    /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(Tab_default.Pane, { active: activeTab === "feed", children: /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(ChatWall, { showInputForm: true, context: "feed", scrollDirection: "down", onUserClick: handleUserClick }) }),
+    /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(Tab_default.Pane, { active: activeTab === "recommendations", children: /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(ChatWall, { showInputForm: false, context: "recommendations", scrollDirection: "down", onUserClick: handleUserClick }) }),
+    chatRooms.map((room) => /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(Tab_default.Pane, { active: activeTab === room.id, children: /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(ChatWall, { showInputForm: true, context: "chat", scrollDirection: "down", room: room.id, onUserClick: handleUserClick }) }, room.id)),
+    /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(Tab_default.Pane, { active: activeTab === "popular", children: /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(ChatWall, { showInputForm: false, context: "popular", scrollDirection: "down", onUserClick: handleUserClick }) }),
+    /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(Tab_default.Pane, { active: activeTab === "search", children: /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(ChatWall, { showInputForm: false, context: "search", scrollDirection: "down", onUserClick: handleUserClick }) }),
+    /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(Tab_default.Pane, { active: activeTab === "friends", children: /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(ChatWall, { showInputForm: false, context: "friends", scrollDirection: "down", onUserClick: handleUserClick }) }),
+    /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(Tab_default.Pane, { active: activeTab === "notifications", children: /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(ChatWall, { showInputForm: false, context: "notifications", scrollDirection: "down", onUserClick: handleUserClick }) }),
+    /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(Tab_default.Pane, { active: activeTab === "blocked", children: /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(ChatWall, { showInputForm: false, context: "blocked", scrollDirection: "down", onUserClick: handleUserClick }) }),
+    /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(Tab_default.Pane, { active: activeTab === "following", children: /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(ChatWall, { showInputForm: false, context: "following", scrollDirection: "down", onUserClick: handleUserClick }) }),
+    /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(Tab_default.Pane, { active: activeTab === "followers", children: /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(ChatWall, { showInputForm: false, context: "followers", scrollDirection: "down", onUserClick: handleUserClick }) }),
+    /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(Tab_default.Pane, { active: activeTab === "neighbors", children: /* @__PURE__ */ (0, import_jsx_runtime6.jsxs)("div", { style: { textAlign: "center", padding: "50px 20px", color: "#666" }, children: [
+      /* @__PURE__ */ (0, import_jsx_runtime6.jsx)("h3", { children: "Neighbors" }),
+      /* @__PURE__ */ (0, import_jsx_runtime6.jsx)("p", { children: "This feature is coming soon!" }),
+      /* @__PURE__ */ (0, import_jsx_runtime6.jsx)("p", { children: "Find users near your location" })
     ] }) }),
-    /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(Tab_default.Pane, { active: activeTab === "settings", children: /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(Settings, {}) })
+    /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(Tab_default.Pane, { active: activeTab === "settings", children: /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(Settings, {}) })
   ] }) });
-}
+};
 
 // example/components/IndraV0.tsx
-var import_jsx_runtime6 = __toESM(require_jsx_runtime(), 1);
-function IndraV0() {
-  const [activeTab, setActiveTab] = (0, import_react6.useState)("profile");
-  const [profileUser, setProfileUser] = (0, import_react6.useState)(null);
-  const backend2 = (0, import_react6.useContext)(BackendContext);
-  const [currentUser, setCurrentUser] = (0, import_react6.useState)(null);
-  const [users, setUsers] = (0, import_react6.useState)([]);
-  const [chatRooms, setChatRooms] = (0, import_react6.useState)([]);
-  const scrollTimeoutRef = (0, import_react6.useRef)(null);
-  const [focusedSubject, setFocusedSubject] = (0, import_react6.useState)(null);
+var import_jsx_runtime7 = __toESM(require_jsx_runtime(), 1);
+function IndraV0Content() {
+  const [activeTab, setActiveTab] = (0, import_react5.useState)("profile");
+  const [profileUser, setProfileUser] = (0, import_react5.useState)(null);
+  const backend2 = (0, import_react5.useContext)(BackendContext);
+  const { currentUser, chatRooms } = useDB();
+  const scrollTimeoutRef = (0, import_react5.useRef)(null);
+  const [focusedSubject, setFocusedSubject] = (0, import_react5.useState)(null);
   const handleUserClick = async (item) => {
     console.log("handleUserClick called with:", item);
     console.log("Current focusedSubject before update:", focusedSubject);
@@ -769,24 +813,7 @@ function IndraV0() {
     setProfileUser(null);
     setActiveTab("profile");
   };
-  (0, import_react6.useEffect)(() => {
-    const fetchData = async () => {
-      try {
-        const [user, userList, roomList] = await Promise.all([
-          backend2.getCurrentUser(),
-          backend2.getUsers(),
-          backend2.getChatRooms()
-        ]);
-        setCurrentUser(user);
-        setUsers(userList);
-        setChatRooms(roomList);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    };
-    fetchData();
-  }, [backend2]);
-  (0, import_react6.useEffect)(() => {
+  (0, import_react5.useEffect)(() => {
     const timer = setTimeout(() => {
       const scrollingElement = document.getElementById("scrolling-main-content-container");
       if (scrollingElement) {
@@ -795,7 +822,7 @@ function IndraV0() {
     }, 100);
     return () => clearTimeout(timer);
   }, [activeTab]);
-  return /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(
+  return /* @__PURE__ */ (0, import_jsx_runtime7.jsx)(
     Container_default,
     {
       fluid: true,
@@ -805,8 +832,8 @@ function IndraV0() {
         display: "flex",
         flexDirection: "column"
       },
-      children: /* @__PURE__ */ (0, import_jsx_runtime6.jsxs)(Row_default, { style: { flex: 1, margin: 0, overflow: "hidden" }, children: [
-        /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(
+      children: /* @__PURE__ */ (0, import_jsx_runtime7.jsxs)(Row_default, { style: { flex: 1, margin: 0, overflow: "hidden" }, children: [
+        /* @__PURE__ */ (0, import_jsx_runtime7.jsx)(
           Col_default,
           {
             xs: 2,
@@ -816,10 +843,10 @@ function IndraV0() {
               display: "flex",
               flexDirection: "column"
             },
-            children: /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(Sidebar, { activeTab, setActiveTab })
+            children: /* @__PURE__ */ (0, import_jsx_runtime7.jsx)(Sidebar, { activeTab, setActiveTab })
           }
         ),
-        /* @__PURE__ */ (0, import_jsx_runtime6.jsxs)(
+        /* @__PURE__ */ (0, import_jsx_runtime7.jsxs)(
           Col_default,
           {
             xs: 7,
@@ -831,7 +858,7 @@ function IndraV0() {
               height: "100%"
             },
             children: [
-              /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(
+              /* @__PURE__ */ (0, import_jsx_runtime7.jsx)(
                 HorizontalNav,
                 {
                   activeTab,
@@ -839,12 +866,10 @@ function IndraV0() {
                   onMyProfileClick: handleMyProfileClick
                 }
               ),
-              /* @__PURE__ */ (0, import_jsx_runtime6.jsx)("div", { id: "scrolling-main-content-container", style: { flex: 1, overflow: "auto" }, children: /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(
+              /* @__PURE__ */ (0, import_jsx_runtime7.jsx)("div", { id: "scrolling-main-content-container", style: { flex: 1, overflow: "auto" }, children: /* @__PURE__ */ (0, import_jsx_runtime7.jsx)(
                 MainContent,
                 {
                   activeTab,
-                  chatRooms,
-                  currentUser,
                   profileUser,
                   focusedSubject,
                   handleUserClick
@@ -853,18 +878,16 @@ function IndraV0() {
             ]
           }
         ),
-        /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(
+        /* @__PURE__ */ (0, import_jsx_runtime7.jsx)(
           Col_default,
           {
             xs: 3,
             style: { padding: 0, display: "flex", flexDirection: "column" },
-            children: /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(
+            children: /* @__PURE__ */ (0, import_jsx_runtime7.jsx)(
               RightSidebar,
               {
                 activeTab,
-                setActiveTab,
-                chatRooms,
-                users
+                setActiveTab
               }
             )
           }
@@ -873,11 +896,14 @@ function IndraV0() {
     }
   );
 }
+function IndraV0() {
+  return /* @__PURE__ */ (0, import_jsx_runtime7.jsx)(Provider_default, { store, children: /* @__PURE__ */ (0, import_jsx_runtime7.jsx)(DBProvider, { children: /* @__PURE__ */ (0, import_jsx_runtime7.jsx)(IndraV0Content, {}) }) });
+}
 
 // example/stories/IndraV0.stories.js
-var import_jsx_runtime7 = __toESM(require_jsx_runtime(), 1);
+var import_jsx_runtime8 = __toESM(require_jsx_runtime(), 1);
 function IndraV0Story() {
-  return /* @__PURE__ */ (0, import_jsx_runtime7.jsx)(BackendContext.Provider, { value: backend, children: /* @__PURE__ */ (0, import_jsx_runtime7.jsx)("div", { children: /* @__PURE__ */ (0, import_jsx_runtime7.jsx)(IndraV0, {}) }) });
+  return /* @__PURE__ */ (0, import_jsx_runtime8.jsx)(BackendContext.Provider, { value: backend, children: /* @__PURE__ */ (0, import_jsx_runtime8.jsx)("div", { children: /* @__PURE__ */ (0, import_jsx_runtime8.jsx)(IndraV0, {}) }) });
 }
 export {
   IndraV0Story as default

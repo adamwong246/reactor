@@ -1,29 +1,23 @@
 import { useState, useContext, useEffect } from 'react';
 import { BackendContext } from './Backend.js';
+import { useSelector } from 'react-redux';
+import { selectPosts } from './selectors';
 
 export function usePosts(context, room, profileUser = null) {
   const backend = useContext(BackendContext);
   const [posts, setPosts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const allPosts = useSelector(selectPosts);
 
   useEffect(() => {
     const fetchPosts = async () => {
       setIsLoading(true);
       try {
-        // For profile context, we need to pass the profile user to filter posts
+        // For profile context, pass the profile user's UID to the backend
         if (context === 'profile') {
-          // Get all posts and filter by the profile user's UID
-          const allPosts = await backend.getPosts(context, room);
-          // Filter posts to show only those from the profile user
-          const profileUserPosts = allPosts.filter(post => {
-            // If profileUser is provided, filter by their UID
-            if (profileUser && profileUser.uid) {
-              return post.uid === profileUser.uid;
-            }
-            // If no profileUser is provided, show current user's posts (default behavior)
-            return post.uid === '0';
-          });
-          setPosts(profileUserPosts);
+          const profileUserUid = profileUser?.uid || null;
+          const backendPosts = await backend.getPosts(context, room, profileUserUid);
+          setPosts(backendPosts);
         } else if (['feed', 'recommendations', 'notifications', 'popular', 'chat', 'search', 'friends', 'blocked', 'following', 'followers'].includes(context)) {
           const backendPosts = await backend.getPosts(context, room);
           setPosts(backendPosts);
@@ -40,7 +34,7 @@ export function usePosts(context, room, profileUser = null) {
     };
 
     fetchPosts();
-  }, [context, backend, room, profileUser]);
+  }, [context, backend, room, profileUser, allPosts]);
 
 
   const addPost = async (content, parentId = null) => {
@@ -81,21 +75,10 @@ export function usePosts(context, room, profileUser = null) {
         parentId: newPost.parentId
       };
       
-      if (parentId) {
-        // If it's a reply, update the parent post to include this reply
-        // For now, we'll refetch all posts to get the updated structure
-        const backendPosts = await backend.getPosts(context, room);
-        setPosts(backendPosts);
-      } else {
-        // Add the new post and re-sort based on scroll direction
-        // We'll add it to the list and let the sortPosts function handle the order
-        setPosts(prevPosts => {
-          const updatedPosts = [...prevPosts, formattedPost];
-          // We need to sort them here to maintain the correct order
-          // But the ChatWall will sort them again, so this might not be necessary
-          return updatedPosts;
-        });
-      }
+      // Refetch posts to get the updated list with proper formatting
+      // This ensures the new post is properly integrated with the tree structure
+      const backendPosts = await backend.getPosts(context, room, profileUser?.uid);
+      setPosts(backendPosts);
     } catch (error) {
       console.error('Error adding post:', error);
     }

@@ -9435,3 +9435,228 @@
 +          │    ^
 +          ╵    }
 +
+
+# 2025-11-29 09:33:23.038067
++/clear
+
+# 2025-11-29 09:33:26.438260
++/drop 
+
+# 2025-11-29 09:33:47.047423
++/add package.json example/components/IndraV0.tsx example/components/IndraV0/InitDb.js example/components/IndraV0/Backend.js
+
+# 2025-11-29 09:35:00.673784
++we are going to start moving logic out of the components. We want the backend to be a redux store, which passes data to reselect selectors, which is passed to the react app
+
+# 2025-11-29 09:37:07.547387
++y
+
+# 2025-11-29 09:37:11.515174
++n
+
+# 2025-11-29 09:38:40.630504
++/drop selectors.js store.js
+
+# 2025-11-29 09:38:47.628687
++/add selectors.ts store.ts 
+
+# 2025-11-29 09:40:21.257132
++proceed with the refactor. The final output selectors should directed into a reaect `context` . We only need a single DB context for all output selectors. we don't need a different context for every selector. 
+
+# 2025-11-29 09:42:10.031961
++y
+
+# 2025-11-29 09:44:08.846375
++n
+
+# 2025-11-29 09:46:15.032286
++proceed with creating the DBContext 
+
+# 2025-11-29 09:48:19.628925
++y
+
+# 2025-11-29 09:48:21.046063
++n
+
+# 2025-11-29 09:50:04.884124
++DbContext has problems. perator '>' cannot be applied to types '{ contextValue: { users: any; currentUser: any; relationships: any; chatRooms: any; posts: any; likabilityScores: any; userRatings: any; subjects: any; friends: any; blockedUsers: any; }; }' and '{ children: any; }'.ts(2365)
++Operator '<' cannot be applied to types 'boolean' and 'RegExp'
+
+# 2025-11-29 09:50:17.619129
++/add example/components/IndraV0/DBContext.ts 
+
+# 2025-11-29 09:50:26.602838
++DbContext has problems. perator '>' cannot be applied to types '{ contextValue: { users: any; currentUser: any; relationships: any; chatRooms: any; posts: any; likabilityScores: any; userRatings: any; subjects: any; friends: any; blockedUsers: any; }; }' and '{ children: any; }'.ts(2365)
++Operator '<' cannot be applied to types 'boolean' and 'RegExp'
+
+# 2025-11-29 09:53:46.773504
++n
+
+# 2025-11-29 09:53:47.547909
++Expected 1 arguments, but got 0.ts(2554)
++index.d.ts(710, 9): An argument for 'defaultValue' was not provided.
+
+# 2025-11-29 09:53:59.649941
++/add example/components/IndraV0/DBContext.ts 
+
+# 2025-11-29 09:54:04.963884
++n
+
+# 2025-11-29 09:54:07.474685
++/add example/components/IndraV0/DBContext.tsx 
+
+# 2025-11-29 09:54:11.724774
++Expected 1 arguments, but got 0.ts(2554)
++index.d.ts(710, 9): An argument for 'defaultValue' was not provided.
+
+# 2025-11-29 09:56:14.904334
++proceeed with the feature of redux -> reselect -> react context -> react components. Start at the top (IndraV0) and work your way down the stack. Only refactor one file at a time, and when you are done refactoring it, save it as a tsx file 
+
+# 2025-11-29 09:58:56.468297
++y
+
+# 2025-11-29 10:02:21.091572
++"example/components/IndraV0/selectors.ts" is the right file. the one in the root is garbage 
+
+# 2025-11-29 10:04:51.086724
++n
+
+# 2025-11-29 10:07:17.744808
++add User and ChatRoom to store 
+
+# 2025-11-29 10:07:33.754795
++/add example/components/IndraV0/RightSidebar.tsx
+
+# 2025-11-29 10:07:46.469093
++add User and ChatRoom to store 
+
+# 2025-11-29 10:10:57.598359
++n
+
+# 2025-11-29 10:11:43.235939
++asd
+
+# 2025-11-29 10:11:48.440002
++/add example/components/IndraV0/MainContent.tsx 
+
+# 2025-11-29 10:18:19.784874
++focus on getting the feed working again. it loads no content. Move any "backend logic" into the selectors, but you can use react for ephermal states
+
+# 2025-11-29 10:20:51.832143
++y
+
+# 2025-11-29 10:22:58.479168
++n
+
+# 2025-11-29 10:23:09.493070
++explain you reasoning for all the timeouts in store
+
+# 2025-11-29 10:23:18.314150
++n
+
+# 2025-11-29 10:23:21.686490
++explain you reasoning for all the timeouts in store
+
+# 2025-11-29 10:23:23.004931
++y
+
+# 2025-11-29 10:23:55.735345
++/clear 
+
+# 2025-11-29 10:24:04.256052
++focus on getting the feed working again. it loads no content. Move any "backend logic" into the selectors, but you can use react for ephermal states
+
+# 2025-11-29 10:24:45.982610
++Uncaught TypeError: Cannot read properties of undefined (reading 'filter')
++    at Backend.js:278:40
+
+# 2025-11-29 10:32:10.928210
++✘ [ERROR] The symbol "currentUserUid" has already been declared
++
++    example/components/IndraV0/Backend.ts:301:18:
++      301 │             const currentUserUid = state.currentUser ? state.currentUser....
++          ╵                   ~~~~~~~~~~~~~~
++
++  The symbol "currentUserUid" was originally declared here:
++
++    example/components/IndraV0/Backend.ts:286:18:
++      286 │             const currentUserUid = state.currentUser ? state.currentUser....
++          ╵                   ~~~~~~~~~~~~~~
++
+
+# 2025-11-29 10:32:16.713980
++/add example/components/IndraV0/Backend.ts 
+
+# 2025-11-29 10:32:18.372998
++✘ [ERROR] The symbol "currentUserUid" has already been declared
++
++    example/components/IndraV0/Backend.ts:301:18:
++      301 │             const currentUserUid = state.currentUser ? state.currentUser....
++          ╵                   ~~~~~~~~~~~~~~
++
++  The symbol "currentUserUid" was originally declared here:
++
++    example/components/IndraV0/Backend.ts:286:18:
++      286 │             const currentUserUid = state.currentUser ? state.currentUser....
++          ╵                   ~~~~~~~~~~~~~~
++
+
+# 2025-11-29 10:37:19.440299
++/add example/components/IndraV0/FakeBackend.ts 
+
+# 2025-11-29 10:37:28.598319
++/drop .
+
+# 2025-11-29 10:37:30.753660
++/add example/components/IndraV0/FakeBackend.ts 
+
+# 2025-11-29 10:37:32.339644
++/clear 
+
+# 2025-11-29 10:44:13.445226
++/add example/components/IndraV0/Backend.ts
+
+# 2025-11-29 10:44:29.136801
++/add example/components/IndraV0/BackendUtils.ts 
+
+# 2025-11-29 10:45:22.665907
++observe getUser and addUser in FakeBackend and BackendUtils. repeat this pattern for the other methods 
+
+# 2025-11-29 10:48:02.459099
++proceed 
+
+# 2025-11-29 10:51:08.488822
++repeat for searchPosts
+
+# 2025-11-29 10:52:40.469480
++repeat for searchSubjects, searchUsers, updateUser
+
+# 2025-11-29 10:53:47.656608
++repeat for getPosts
+
+# 2025-11-29 10:56:47.304901
++/clear 
+
+# 2025-11-29 10:56:58.163629
++apply DRY principles to BackendUtils, where appropriate 
+
+# 2025-11-29 11:00:29.178841
++/add example/components/IndraV0/HorizontalNav.ts
+
+# 2025-11-29 11:00:30.553705
++n
+
+# 2025-11-29 11:00:32.387575
++/add example/components/IndraV0/HorizontalNav.ts
+
+# 2025-11-29 11:00:51.330138
++/add example/components/IndraV0/HorizontalNav.tsx 
+
+# 2025-11-29 11:01:06.764276
++notifications do not appear anymore 
+
+# 2025-11-29 11:04:30.608786
++notifications still do not appear
+
+# 2025-11-29 11:06:34.522230
++y

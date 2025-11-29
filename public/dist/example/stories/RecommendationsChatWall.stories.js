@@ -1,7 +1,7 @@
 import {
   ChatWall
-} from "../../chunk-6S3AY6AP.js";
-import "../../chunk-5ZPPOQ6L.js";
+} from "../../chunk-UPVY4YXW.js";
+import "../../chunk-SXSZYXDB.js";
 import "../../chunk-65LQHSH5.js";
 import {
   __toESM,
