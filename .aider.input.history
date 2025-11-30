@@ -10120,3 +10120,100 @@
 
 # 2025-11-29 19:06:42.565359
 +n
+
+# 2025-11-30 08:36:26.561502
++   !   yarn cli rakonto                                                                                                                                   ~/Code/indra rakonto -!
++yarn run v1.22.19
++warning ../../package.json: No license field
++$ tsx cli/indra-cli.ts rakonto
++Starting Rakonto...
++npm warn config dev Please use --include=dev instead.
++Unknown command: "rakonto"
++
++To see a list of supported npm commands, run:
++  npm help
++Rakonto process exited with code 1
++✨  Done in 0.80s.
++
++   ?   npx rakonto --dev                                                                                                                                  ~/Code/indra rakonto -!
++sh: rakonto: command not found
+
+# 2025-11-30 08:37:03.697223
++/clear 
+
+# 2025-11-30 08:50:40.707821
++https://github.com/adamwong246/indra/tree/rakonto  this is the project which uses rakonto. We need to figure out how to run rakonto from there. So we will need to think across repos.
+
+# 2025-11-30 08:50:42.424604
++y
+
+# 2025-11-30 08:50:43.796937
++n
+
+# 2025-11-30 08:51:42.576665
++don't touch the local .storyboardrc.js but do observe the one in the indra repo
+
+# 2025-11-30 08:52:11.770822
++https://raw.githubusercontent.com/adamwong246/indra/refs/heads/rakonto/package.json
+
+# 2025-11-30 08:52:13.293848
++y
+
+# 2025-11-30 08:54:18.036773
++d
+
+# 2025-11-30 08:54:24.879586
++s
+
+# 2025-11-30 08:56:34.880185
++I have removed react-storybooks from inda. We should be using rakonto instead https://github.com/adamwong246/indra/blob/rakonto/package.json
+
+# 2025-11-30 08:56:36.475258
++y
+
+# 2025-11-30 08:58:02.130352
++I need you to undersstand that we are working with 2 repos. You need to tell me how to update indras pacakge.json, because you cannot make those changes- it must be done manually. 
+
+# 2025-11-30 08:59:18.561946
++n
+
+# 2025-11-30 08:59:24.436784
++$ rakonto --dev
++/bin/sh: rakonto: command not found
+
+# 2025-11-30 08:59:33.824079
++when running the command from indra:    $ rakonto --dev
++/bin/sh: rakonto: command not found
+
+# 2025-11-30 09:00:41.959212
++d
+
+# 2025-11-30 09:01:08.265696
++$ yarn rakonto --dev
++warning ../../package.json: No license field
++error Command "rakonto" not found.
++info Visit https://yarnpkg.com/en/docs/cli/run for documentation about this command.
++error Command failed with exit code 1.
++info Visit https://yarnpkg.com/en/docs/cli/run for documentation about this command.
++
++   !    npx rakonto --dev                                        ~/Code/indra rakonto !
++sh: rakonto: command not found
++
++   !   ls -la node_modules/.bin/ | grep rakonto                  ~/Code/indra rakonto !
++
++   !
+
+# 2025-11-30 09:01:09.968250
++n
+
+# 2025-11-30 09:04:09.266614
++   !    node node_modules/rakonto/dist/cli.js --dev              ~/Code/indra rakonto !
++✘ [ERROR] Could not resolve "/Users/adam/Code/indra/dev/stories/IndraV1.stories.tsx"
++
++✘ [ERROR] Could not resolve "react-redux"
++
++    dev/IndraV0.tsx:3:25:
++      3 │ import { Provider } from 'react-redux';
+
+# 2025-11-30 09:04:51.083058
++Stop fucking with the storyboardrc file. It has zero relevance on the problem at hand. Put a comment in the rc.js file to reemind yourself not to touch it again
