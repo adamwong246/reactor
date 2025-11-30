@@ -1,57 +1,39 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  </head>
-  <body>
-    <div id="story-root"></div>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Story Preview</title>
+</head>
+<body>
+    <div id="root"></div>
     <script type="module">
-      // import React from 'react';
-      // import ReactDOM from 'react-dom/client';
-
-      // Get the story path from the URL
-      const urlParams = new URLSearchParams(window.location.search);
-      const storyPath = urlParams.get("story");
-
-      if (storyPath) {
-        const cssStoryPath = storyPath.replace(/\.(tsx|jsx|ts|js)$/, ".css");
-        const cssPath = `/dist/${cssStoryPath}`;
-        console.log("CSS import path in iframe:", cssPath);
-
-        // Create and append the CSS link
-        const link = document.createElement("link");
-        link.rel = "stylesheet";
-        link.href = cssPath;
-        document.head.appendChild(link);
-        // The story is built to /dist/ with the same relative path
-        // esbuild will have created a file with a .js extension
-        const jsStoryPath = storyPath.replace(/\.(tsx|jsx|ts|js)$/, ".js");
-
-        const fullPath = `/dist/${jsStoryPath}`;
-        // Add a timestamp to bust cache
-        const timestamp = Date.now();
-        const importPath = `${fullPath}?t=${timestamp}`;
-
-        // Import and render the story
-        import(importPath)
-          .then((module) => {
-            // const root = ReactDOM.createRoot(document.getElementById("root"));
-            // const StoryComponent = module.default;
-            // root.render(React.createElement(StoryComponent));
-          })
-          .catch((error) => {
-            console.error("Error loading story:", error);
-            document.getElementById("root").innerHTML = `
+        import React from 'react';
+        import ReactDOM from 'react-dom/client';
+        
+        const urlParams = new URLSearchParams(window.location.search);
+        const storyPath = urlParams.get('story');
+        
+        if (storyPath) {
+            const jsStoryPath = storyPath.replace(/\.(tsx|jsx|ts|js)$/, '.js');
+            const importPath = `/dist/${jsStoryPath}`;
+            
+            import(importPath).then(module => {
+                const root = ReactDOM.createRoot(document.getElementById('root'));
+                const StoryComponent = module.default;
+                root.render(React.createElement(StoryComponent));
+            }).catch(error => {
+                console.error('Error loading story:', error);
+                document.getElementById('root').innerHTML = `
                     <div style="padding: 20px; color: red;">
                         Error loading story: ${storyPath}<br>
                         ${error.message}
                     </div>
                 `;
-          });
-      } else {
-        document.getElementById("root").innerHTML = "No story specified";
-      }
+            });
+        } else {
+            document.getElementById('root').innerHTML = 'No story specified';
+        }
     </script>
-  </body>
+</body>
 </html>

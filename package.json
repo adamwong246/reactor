@@ -1,6 +1,6 @@
 {
   "name": "rakonto",
-  "version": "0.0.1",
+  "version": "0.0.7",
   "type": "module",
   "main": "dist/index.js",
   "author": "adamwong246@gmail.com",
@@ -26,9 +26,10 @@
     "prepublishOnly": "npm run build"
   },
   "bin": {
-    "rakonto": "./dist/cli.js"
+    "rakonto": "./cli.js"
   },
   "files": [
-    "dist"
+    "dist",
+    "story.tsx"
   ]
 }

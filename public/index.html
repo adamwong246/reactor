@@ -9,8 +9,8 @@
     <div id="root"></div>
     <script type="module">
         import { initRakonto } from '/dist/index.js';
-        // Import the config from the current directory
-        // Note: This assumes .storyboardrc.js is at the root of the served directory
+        // Import the config from the root of the served directory
+        // The app must provide .storyboardrc.js at the root
         const config = await import('/.storyboardrc.js').then(mod => mod.default);
         initRakonto(config);
     </script>

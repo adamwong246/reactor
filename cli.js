@@ -19,9 +19,68 @@ async function run() {
         // Ensure public directory exists
         await fs.mkdir('public', { recursive: true });
         
-        // Copy the config file to the public directory so it can be imported by the browser
-        const configContent = await fs.readFile(path.resolve(process.cwd(), configPath), 'utf-8');
-        await fs.writeFile(path.join(process.cwd(), 'public', '.storyboardrc.js'), configContent);
+        // The .storyboardrc.js file should be provided by the app and served from the root
+        // We don't need to copy it to the public directory
+        
+        // Write the HTML files directly to the public directory
+        const indexHtml = `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rakonto Storybook</title>
+</head>
+<body>
+    <div id="root"></div>
+    <script type="module">
+        import { initRakonto } from '/dist/index.js';
+        const config = await import('/.storyboardrc.js').then(mod => mod.default);
+        initRakonto(config);
+    </script>
+</body>
+</html>`;
+        await fs.writeFile(path.join(process.cwd(), 'public', 'index.html'), indexHtml);
+        
+        const storyIframeHtml = `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Story Preview</title>
+</head>
+<body>
+    <div id="root"></div>
+    <script type="module">
+        import React from 'react';
+        import ReactDOM from 'react-dom/client';
+        
+        const urlParams = new URLSearchParams(window.location.search);
+        const storyPath = urlParams.get('story');
+        
+        if (storyPath) {
+            const jsStoryPath = storyPath.replace(/\\.(tsx|jsx|ts|js)$/, '.js');
+            const importPath = \`/dist/\${jsStoryPath}\`;
+            
+            import(importPath).then(module => {
+                const root = ReactDOM.createRoot(document.getElementById('root'));
+                const StoryComponent = module.default;
+                root.render(React.createElement(StoryComponent));
+            }).catch(error => {
+                console.error('Error loading story:', error);
+                document.getElementById('root').innerHTML = \`
+                    <div style="padding: 20px; color: red;">
+                        Error loading story: \${storyPath}<br>
+                        \${error.message}
+                    </div>
+                \`;
+            });
+        } else {
+            document.getElementById('root').innerHTML = 'No story specified';
+        }
+    </script>
+</body>
+</html>`;
+        await fs.writeFile(path.join(process.cwd(), 'public', 'story-iframe.html'), storyIframeHtml);
         
         const buildOptions = {
             format: 'esm',
@@ -50,7 +109,7 @@ async function run() {
             
             await ctx.watch();
             const { port } = await ctx.serve({
-                servedir: 'public',
+                servedir: process.cwd(),
                 port: 8000,
             });
             

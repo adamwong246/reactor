@@ -17,17 +17,22 @@ const config = await import(path.resolve(process.cwd(), configFile)).then(mod =>
 await fs.mkdir('public', { recursive: true });
 await fs.mkdir('dist', { recursive: true });
 
-// Copy the config file to the public directory so it can be imported by the browser
-const configContent = await fs.readFile(path.resolve(process.cwd(), configFile), 'utf-8');
-await fs.writeFile(path.join(process.cwd(), 'public', '.storyboardrc.js'), configContent);
+// The .storyboardrc.js file should be provided by the app and served from the root
+// We don't need to copy it to the public directory
 
-// Copy index.js and cli.js to dist directory for library usage
+// Copy index.js and story.tsx to dist directory for library usage
 await fs.copyFile(path.join(__dirname, 'index.js'), path.join(process.cwd(), 'dist', 'index.js'));
-await fs.copyFile(path.join(__dirname, 'cli.js'), path.join(process.cwd(), 'dist', 'cli.js'));
+await fs.copyFile(path.join(__dirname, 'story.tsx'), path.join(process.cwd(), 'dist', 'story.js'));
+// Copy cli.js to root directory for bin usage
+await fs.copyFile(path.join(__dirname, 'cli.js'), path.join(process.cwd(), 'cli.js'));
 
 const buildOptions = {
     format: 'esm',
-    entryPoints: [path.join(__dirname, 'index.js'), ...config.stories.map(story => path.resolve(process.cwd(), story))],
+    entryPoints: [
+        path.join(__dirname, 'index.js'),
+        path.join(__dirname, 'story.tsx'),
+        ...config.stories.map(story => path.resolve(process.cwd(), story))
+    ],
     bundle: true,
     outdir: 'public/dist',
     platform: 'browser',
@@ -53,7 +58,7 @@ if (isDev) {
     
     await ctx.watch();
     await ctx.serve({
-        servedir: 'public',
+        servedir: process.cwd(),
         port: 8000,
     });
     

@@ -10092,3 +10092,31 @@
 
 # 2025-11-29 16:17:23.018668
 +n
+
+# 2025-11-29 18:47:40.352008
++if I have rakonot has a dependency of another project, how would I invoke it?
+
+# 2025-11-29 18:49:39.360706
++n
+
+# 2025-11-29 18:56:42.188695
++we need to make story.tsx available to dependent apps
+
+# 2025-11-29 18:56:44.960320
++y
+
+# 2025-11-29 18:59:24.077072
++n
+
+# 2025-11-29 19:01:46.164936
++   !   npx rakonto --dev                                                                              ~/Code/indra rakonto -!
++Error: Error: ENOENT: no such file or directory, open '/Users/adam/Code/indra/node_modules/public/index.html'
++    at async open (node:internal/fs/promises:639:25)
++    at async Object.readFile (node:internal/fs/promises:1246:14)
++    at async run (file:///Users/adam/Code/indra/node_modules/rakonto/cli.js:31:27)
+
+# 2025-11-29 19:05:47.795194
++you cannot copy storyboardrc.js to public, that must be provided by the app which depends uponi rakonto
+
+# 2025-11-29 19:06:42.565359
++n

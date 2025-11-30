@@ -4,9 +4,9 @@ import { createRoot } from 'react-dom/client';
 export function initRakonto(config) {
     const App = () => {
         const [selectedStory, setSelectedStory] = useState(null);
-    const [storiesTree, setStoriesTree] = useState({});
-    const [iframeContent, setIframeContent] = useState('');
-    const [isLoading, setIsLoading] = useState(false);
+        const [storiesTree, setStoriesTree] = useState({});
+        const [iframeContent, setIframeContent] = useState('');
+        const [isLoading, setIsLoading] = useState(false);
     
     // Build the tree structure from the flat list of stories
     useEffect(() => {

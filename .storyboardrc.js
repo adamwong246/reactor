@@ -2,8 +2,8 @@ export default {
     stories: [
         'example/stories/Button.stories.tsx',
         'example/stories/Header.stories.tsx',
-        'example/stories/IndraV0.stories.tsx',
-        'example/stories/IndraV1.stories.tsx',
+        // 'example/stories/IndraV0.stories.tsx',
+        // 'example/stories/IndraV1.stories.tsx',
         // 'example/stories/ProfileChatWall.stories.tsx',
         // 'example/stories/FeedChatWall.stories.tsx',
         // 'example/stories/RecommendationsChatWall.stories.tsx',
