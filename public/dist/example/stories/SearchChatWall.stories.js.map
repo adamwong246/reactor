@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../../example/stories/SearchChatWall.stories.tsx"],
-  "sourcesContent": ["import React from 'react';\nimport { ChatWall } from '../components/IndraV0/ChatWall.js';\n\nexport default function SearchChatWallStory() {\n    return (\n        <div>\n            <ChatWall showInputForm={false} context=\"search\" scrollDirection=\"down\" />\n        </div>\n    );\n}\n"],
-  "mappings": ";;;;;;;;;;;AAMY;AAHG,SAAR,sBAAuC;AAC1C,SACI,4CAAC,SACG,sDAAC,YAAS,eAAe,OAAO,SAAQ,UAAS,iBAAgB,QAAO,GAC5E;AAER;",
-  "names": []
-}

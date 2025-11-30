@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../../example/stories/ChatWall.stories.js"],
-  "sourcesContent": ["import React from 'react';\nimport { ChatWall } from '../components/IndraV0/ChatWall.js';\n\nexport default function ChatWallStory() {\n    return (\n        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>\n            <div>\n                <h3>Default ChatWall (Flat List, No Input)</h3>\n                <ChatWall />\n            </div>\n            <div>\n                <h3>ChatWall with Input Form (Flat List)</h3>\n                <ChatWall showInputForm={true} />\n            </div>\n            <div>\n                <h3>ChatWall as Chat Thread (No Input)</h3>\n                <ChatWall isFlatList={false} />\n            </div>\n            <div>\n                <h3>ChatWall as Chat Thread with Input</h3>\n                <ChatWall showInputForm={true} isFlatList={false} />\n            </div>\n        </div>\n    );\n}\n"],
-  "mappings": ";;;;;;;;;;;;AAAA,mBAAkB;AAMN;AAHG,SAAR,gBAAiC;AACpC,SACI,6CAAC,SAAI,OAAO,EAAE,SAAS,QAAQ,eAAe,UAAU,KAAK,OAAO,GAChE;AAAA,iDAAC,SACG;AAAA,kDAAC,QAAG,oDAAsC;AAAA,MAC1C,4CAAC,YAAS;AAAA,OACd;AAAA,IACA,6CAAC,SACG;AAAA,kDAAC,QAAG,kDAAoC;AAAA,MACxC,4CAAC,YAAS,eAAe,MAAM;AAAA,OACnC;AAAA,IACA,6CAAC,SACG;AAAA,kDAAC,QAAG,gDAAkC;AAAA,MACtC,4CAAC,YAAS,YAAY,OAAO;AAAA,OACjC;AAAA,IACA,6CAAC,SACG;AAAA,kDAAC,QAAG,gDAAkC;AAAA,MACtC,4CAAC,YAAS,eAAe,MAAM,YAAY,OAAO;AAAA,OACtD;AAAA,KACJ;AAER;",
-  "names": []
-}

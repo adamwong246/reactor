@@ -1,6 +1,6 @@
 {
   "name": "rakonto",
-  "version": "0.0.10",
+  "version": "0.0.11",
   "type": "module",
   "main": "dist/index.js",
   "author": "adamwong246@gmail.com",
@@ -17,8 +17,7 @@
     "typescript": "^5.9.3"
   },
   "scripts": {
-    "dev": "tsx build.ts .storyboardrc.js --dev",
-    "build": "tsx build.ts .storyboardrc.js",
+    "dev": "node dev.js",
     "prepublishOnly": "npm run build"
   },
   "bin": {

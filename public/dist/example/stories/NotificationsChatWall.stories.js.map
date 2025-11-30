@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../../example/stories/NotificationsChatWall.stories.tsx"],
-  "sourcesContent": ["import React from 'react';\nimport { ChatWall } from '../components/IndraV0/ChatWall.js';\n\nexport default function NotificationsChatWallStory() {\n    return (\n        <div>\n            <ChatWall showInputForm={false} context=\"notifications\" scrollDirection=\"down\" />\n        </div>\n    );\n}\n"],
-  "mappings": ";;;;;;;;;;;AAMY;AAHG,SAAR,6BAA8C;AACjD,SACI,4CAAC,SACG,sDAAC,YAAS,eAAe,OAAO,SAAQ,iBAAgB,iBAAgB,QAAO,GACnF;AAER;",
-  "names": []
-}

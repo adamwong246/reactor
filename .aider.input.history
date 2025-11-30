@@ -10306,3 +10306,138 @@
 
 # 2025-11-30 09:16:57.448715
 +d
+
+# 2025-11-30 09:18:54.102661
++your solution looks fucking insane. Are you sure this is the right approach
+
+# 2025-11-30 09:19:48.527903
++"react-redux
++which isn't available in the browser context" this is completly untrue
+
+# 2025-11-30 09:20:37.882677
++proced 
+
+# 2025-11-30 09:58:45.475080
++/clear 
+
+# 2025-11-30 09:58:46.763537
++/drop
+
+# 2025-11-30 09:59:12.279032
++/add rakonto-dev.js rakonto.js 
+
+# 2025-11-30 09:59:19.212770
++   !   yarn devV1                                                 ~/Code/rakonto main -!
++yarn run v1.22.19
++warning ../../package.json: No license field
++$ node rakonto-dev.js
++file:///Users/adam/Code/rakonto/rakonto.js:30
++  await esbuild.serve(
++                ^
++
++TypeError: esbuild.serve is not a function
+
+# 2025-11-30 09:59:38.627553
++d
+
+# 2025-11-30 10:59:05.527767
++/clear 
+
+# 2025-11-30 10:59:11.060449
++/add example 
+
+# 2025-11-30 10:59:53.713302
++/add "rakonto-dist/example/stories/
+
+# 2025-11-30 10:59:55.883755
++n
+
+# 2025-11-30 11:00:01.896234
++/add rakonto-dist/example/stories/
+
+# 2025-11-30 11:00:11.065112
++from html, "StoryComponent undefined"
+
+# 2025-11-30 11:01:02.354552
++don't make the changes in the outputted html. Make this change in rakonto.js
+
+# 2025-11-30 11:01:56.671541
++d
+
+# 2025-11-30 11:01:57.322710
++StoryComponent () => {
++  /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("div", { style: { display: "flex", flexDirection: "column", gap: "20px" }, children: [
++    /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("div",…
++react-entry.js:3994 Uncaught Error: Element type is invalid: expected a string (for built-in components) or a class/function (for composite components) but got: undefined. You likely forgot to export your component from the file it's defined in, or you might have mixed up default and named imports.
+
+# 2025-11-30 11:02:25.926644
++i told you not to touch that html
+
+# 2025-11-30 11:03:13.969035
++no errors, but nothing is rendered to page 
+
+# 2025-11-30 11:04:11.150564
++React imports loaded: {RakontoReact: {…}, RakontoReactDOM: {…}}
++my first Header-rakonto.html:28 Story module loaded: Module {Symbol(Symbol.toStringTag): 'Module'}
++my first Header-rakonto.html:30 StoryComponent () => {
++  /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("div", { style: { display: "flex", flexDirection: "column", gap: "20px" }, children: [
++    /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("div",…
++my first Header-rakonto.html:33 Root element: <div id=​"root">​</div>​
++my first Header-rakonto.html:37 Root created: ReactDOMRoot {_internalRoot: FiberRootNode}
++my first Header-rakonto.html:39 Render called
+
+# 2025-11-30 11:05:27.139802
++you can't hardcode those chunks
+
+# 2025-11-30 11:05:53.586764
++your are losing your mind i think
+
+# 2025-11-30 11:06:54.386695
++the red-test worked.    Now rendering StoryComponent
++my first Header-rakonto.html:49 DebugComponent rendering
++my first Header-rakonto.html:52 StoryComponent element: {$$typeof: Symbol(react.transitional.element), key: null, props: {…}, _owner: FiberNode, type: ƒ, …}
+
+# 2025-11-30 11:07:10.854234
++don't add css
+
+# 2025-11-30 11:11:09.418460
++<div id="root"><div style="border: 3px solid blue; padding: 10px;"><div style="background-color: yellow; padding: 10px; margin-bottom: 10px;">DEBUG: Component should be below this message</div></div></div>
+
+# 2025-11-30 11:11:52.407786
++/add example/stories
+
+# 2025-11-30 11:11:55.858374
++try again
+
+# 2025-11-30 11:14:51.715149
++it looks good now. lets remove the debugging now that it is working 
+
+# 2025-11-30 11:22:59.979661
++/drop
+
+# 2025-11-30 11:23:01.249528
++/clear 
+
+# 2025-11-30 11:23:19.974316
++/add index.js rakonto-dist/
+
+# 2025-11-30 11:24:24.290989
++I want you to double check and make sure we are not bundling react/reactdom multiple times. Even though it is working as epxected, I'm not sure if react-entry is necessary given esbuilds chunks 
+
+# 2025-11-30 11:24:31.240302
++n
+
+# 2025-11-30 11:24:40.482906
++/drop rakonto-dist
+
+# 2025-11-30 11:24:49.226095
++/add react-entry.js 
+
+# 2025-11-30 11:25:04.534558
++/add example
+
+# 2025-11-30 11:25:13.561300
++I want you to double check and make sure we are not bundling react/reactdom multiple times. Even though it is working as epxected, I'm not sure if react-entry is necessary given esbuilds chunks 
+
+# 2025-11-30 11:25:36.523125
++I don't want to use a CDN

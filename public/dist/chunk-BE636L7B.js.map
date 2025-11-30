@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../story.tsx"],
-  "sourcesContent": ["import { ReactNode } from \"react\";\nimport { createRoot } from \"react-dom/client\";\n\nexport default function Story(children: ReactNode) {\n\n  const container = document.getElementById(\"story-root\");\n  const root = createRoot(container);\n\n  root.render(children)\n    \n}\n"],
-  "mappings": ";;;;;;;;AACA,oBAA2B;AAEZ,SAAR,MAAuB,UAAqB;AAEjD,QAAM,YAAY,SAAS,eAAe,YAAY;AACtD,QAAM,WAAO,0BAAW,SAAS;AAEjC,OAAK,OAAO,QAAQ;AAEtB;",
-  "names": []
-}

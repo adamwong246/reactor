@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../../example/stories/ProfileBanner.stories.tsx"],
-  "sourcesContent": ["import React from 'react';\nimport { ProfileBanner } from '../components/IndraV0/ProfileBanner.js';\n\nexport default function ProfileBannerStory() {\n    return (\n        <div style={{ padding: '20px' }}>\n            <h3>Profile Banner</h3>\n            <ProfileBanner />\n        </div>\n    );\n}\n"],
-  "mappings": ";;;;;;;;;;AAKQ;AAFO,SAAR,qBAAsC;AACzC,SACI,6CAAC,SAAI,OAAO,EAAE,SAAS,OAAO,GAC1B;AAAA,gDAAC,QAAG,4BAAc;AAAA,IAClB,4CAAC,iBAAc;AAAA,KACnB;AAER;",
-  "names": []
-}

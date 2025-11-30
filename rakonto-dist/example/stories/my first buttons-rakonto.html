@@ -1,0 +1,20 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rakonto - example/stories/Button.tsx </title>
+</head>
+<body>
+    <div id="root"></div>
+    <script type="module">
+        const {RakontoReact, RakontoReactDOM} = await import('/rakonto-dist/react-entry.js');
+        await import('/rakonto-dist/example/stories/Button.js').then(module => {
+            const root = RakontoReactDOM.createRoot(document.getElementById('root'));
+            const StoryComponent = module.default;
+            root.render(RakontoReact.createElement(StoryComponent));
+        });
+    </script>
+</body>
+</html>

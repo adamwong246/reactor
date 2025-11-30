@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../../example/stories/PopularChatWall.stories.tsx"],
-  "sourcesContent": ["import React from 'react';\nimport { ChatWall } from '../components/IndraV0/ChatWall.js';\n\nexport default function PopularChatWallStory() {\n    return (\n        <div>\n            <ChatWall showInputForm={false} context=\"popular\" scrollDirection=\"down\" />\n        </div>\n    );\n}\n"],
-  "mappings": ";;;;;;;;;;;AAMY;AAHG,SAAR,uBAAwC;AAC3C,SACI,4CAAC,SACG,sDAAC,YAAS,eAAe,OAAO,SAAQ,WAAU,iBAAgB,QAAO,GAC7E;AAER;",
-  "names": []
-}

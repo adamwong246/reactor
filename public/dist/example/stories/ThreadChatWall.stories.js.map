@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../../example/stories/ThreadChatWall.stories.tsx"],
-  "sourcesContent": ["import React from 'react';\nimport { ChatWall } from '../components/IndraV0/ChatWall.js';\n\nexport default function ThreadChatWallStory() {\n    return (\n        <div>\n            <ChatWall showInputForm={true} context=\"chat\" scrollDirection=\"up\" />\n        </div>\n    );\n}\n"],
-  "mappings": ";;;;;;;;;;;AAMY;AAHG,SAAR,sBAAuC;AAC1C,SACI,4CAAC,SACG,sDAAC,YAAS,eAAe,MAAM,SAAQ,QAAO,iBAAgB,MAAK,GACvE;AAER;",
-  "names": []
-}
